@@ -302,7 +302,7 @@
           <TMPL_IF schoolMagicNote><div class="box"><p><TMPL_VAR schoolMagicNote></p></div></TMPL_IF>
           <TMPL_LOOP schoolMagicData>
           <div class="school-magic">
-            <h3><TMPL_VAR CLASS></h3>
+            <TMPL_IF CLASS><h3><TMPL_VAR CLASS></h3></TMPL_IF>
             <div class="data-magic <TMPL_VAR CLASS_EN>">
             <div class="school-magic-name">
               <dl class="name color-set"><dt><TMPL_VAR LEVEL><dd><div><TMPL_VAR ICON><TMPL_VAR DIVINE_MARK>【<TMPL_VAR NAME>】</div><TMPL_IF ALIAS><span class="alias"><TMPL_VAR ALIAS></span></TMPL_IF><small><TMPL_VAR NAME_NOTES></small></dl>
