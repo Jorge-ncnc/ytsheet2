@@ -45,6 +45,18 @@ article, .color-set {
   }
 }
 
+@media screen {
+  html:not(.night) #monster article,
+  html:not(.night) #monster article .color-set {
+    --monster-level-bg-color: #444;
+    --monster-level-color: #fff;
+    --monster-head-bg-color: hsl(
+      var(--box-head-bg-color-h, 225),
+      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+      80%
+    );
+  }
+}
 
 /* // Base
 ---------------------------------------------------------------------------------------------------- */

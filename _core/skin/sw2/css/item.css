@@ -36,6 +36,15 @@ article, .color-set {
     }
   }
 }
+@media screen {
+  html:not(.night) #item article {
+    --item-head-bg-color: hsl(
+      var(--box-head-bg-color-h, 225),
+      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+      80%
+    );
+  }
+}
 
 /* // Base
 ---------------------------------------------------------------------------------------------------- */
