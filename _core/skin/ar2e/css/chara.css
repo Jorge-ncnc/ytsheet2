@@ -819,7 +819,7 @@ dl#level {
     &.sk-general { color: hsl(185,50%,30%); background-color: hsla(185,100%, 85%,0.4); }
     &.sk-geis    { color: hsl(270,50%,30%); background-color: hsla(270,100%, 90%,0.4); }
     &.sk-add     { color: hsl(310,20%,30%); background-color: hsla(310, 20%, 80%,0.4); }
-    &.sk-another { color: hsl(  0,50%,30%); background-color: hsla(  0,100%, 85%,0.4); }
+    &.sk-another { color: hsl(270,50%,30%); background-color: hsla(270,100%, 85%,0.4); }
     @media screen {
       .night & {
         &.sk-race    { color: hsl(120,30%,70%); }
@@ -828,7 +828,7 @@ dl#level {
         &.sk-general { color: hsl(185,30%,80%); background-color: hsla(185,100%, 25%,0.4); }
         &.sk-geis    { color: hsl(270,30%,80%); background-color: hsla(270,100%, 20%,0.4); }
         &.sk-add     { color: hsl(310,20%,80%); background-color: hsla(310, 20%, 20%,0.4); }
-        &.sk-another { color: hsl(  0,20%,80%); background-color: hsla(  0, 20%, 20%,0.4); }
+        &.sk-another { color: hsl(270,20%,80%); background-color: hsla(270, 20%, 20%,0.4); }
       }
     }
     &.sk-class,
@@ -855,13 +855,13 @@ dl#level {
     }
     &.ct-magic   { color: hsl(250,100%, 30%); }
     &.ct-alchemy { color: hsl( 30,100%, 30%); }
-    &.ct-song    { color: hsl(350,100%, 30%); }
+    &.ct-song    { color: hsl(290,100%, 30%); }
     &.ct-role    { color: hsl(140,100%, 30%); }
     @media screen {
       .night & {
         &.ct-magic   { color: hsl(250,100%, 80%); }
         &.ct-alchemy { color: hsl( 30,100%, 80%); }
-        &.ct-song    { color: hsl(350,100%, 80%); }
+        &.ct-song    { color: hsl(290,100%, 80%); }
         &.ct-role    { color: hsl(140,100%, 80%); }
       }
     }

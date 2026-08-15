@@ -3,11 +3,9 @@
 :root{
   --theme-main-hue: 280;
   --theme-sub-hue: 280;
-  --theme-accent-hue: 26;
+  --theme-accent-hue: 280;
   --header-lightness: 50%;
-  --menu-icon-current-color   : #e02030;
   --menu-icon-current-bg-color: #000000;
-  --icon--current-color: var(--menu-icon-current-color);
 }
 .night {
   --header-lightness: 27%;
