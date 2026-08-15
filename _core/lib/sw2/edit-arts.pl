@@ -243,39 +243,44 @@ print <<"HTML";
         <dl class="area  "><dt>地域      <dd>@{[ input 'schoolArea','','','placeholder="大陸・地方など"' ]}</dl>
         <dl class="req   "><dt>入門条件  <dd>@{[ input 'schoolReq','','','list="list-school-req"' ]}</dl>
         <dl class="note  "><dt>詳細      <dd><textarea name="schoolNote">$pc{schoolNote}</textarea></dl>
-        <dl class="arms  "><dt>流派アイテム<dd><textarea name="schoolItemNote" placeholder="流派アイテムの概要">$pc{schoolItemNote}</textarea></dl>
-        <dl class="arms  "><dt>アイテム一覧
-          <dd>
-            <input type="text" id="schoolItemUrl" placeholder="アイテムシートのURL"><span class="button" onclick="addSchoolItem()">追加</span>
-            @{[ input 'schoolItemList','hidden' ]}
-            <table id="school-item-list" class="data-table">
-              <thead>
-                <th>名前
-                <th>カテゴリ
-                <th>概要
-                <th>
-              <tbody>
-                @{[ map {
-                  my %item = loadItemData($_);
-                  $item{category} =~ s/\s/<hr>/g;
-                  <<~"HTML";
-                  <tr>
-                  ${\ do {
-                    if(exists $item{itemName}) {
-                      qq|<td><a href="$_" target="_blank">|.unescapeTags($item{itemName})."</a>";
-                    }
-                    else {
-                      qq|<td><a href="$_" target="_blank" class="failed">データ取得失敗</a>|;
-                    }
-                  }}
-                  <td>@{[ unescapeTags $item{category} ]}
-                  <td>@{[ unescapeTags $item{summary} ]}
-                  <td class='button' onclick="delSchoolItem(this,'$_')">×
-                  HTML
-                } split ',',$pc{schoolItemList} ]}
-          </table>
-        </dl>
       </div>
+      <details class="box" open>
+        <summary class="in-toc">流派アイテム</summary>
+        <textarea name="schoolItemNote" placeholder="流派アイテムの概要">$pc{schoolItemNote}</textarea>
+        <div class="input-data">
+          <dl class="arms  "><dt>アイテム一覧
+            <dd>
+              <input type="text" id="schoolItemUrl" placeholder="アイテムシートのURL"><span class="button" onclick="addSchoolItem()">追加</span>
+              @{[ input 'schoolItemList','hidden' ]}
+              <table id="school-item-list" class="data-table">
+                <thead>
+                  <th>名前
+                  <th>カテゴリ
+                  <th>概要
+                  <th>
+                <tbody>
+                  @{[ map {
+                    my %item = loadItemData($_);
+                    $item{category} =~ s/\s/<hr>/g;
+                    <<~"HTML";
+                    <tr>
+                    ${\ do {
+                      if(exists $item{itemName}) {
+                        qq|<td><a href="$_" target="_blank">|.unescapeTags($item{itemName})."</a>";
+                      }
+                      else {
+                        qq|<td><a href="$_" target="_blank" class="failed">データ取得失敗</a>|;
+                      }
+                    }}
+                    <td>@{[ unescapeTags $item{category} ]}
+                    <td>@{[ unescapeTags $item{summary} ]}
+                    <td class='button' onclick="delSchoolItem(this,'$_')">×
+                    HTML
+                  } split ',',$pc{schoolItemList} ]}
+              </table>
+          </dl>
+        </div>
+      </details>
       <details class="box" $open{schoolArts}>
         <summary class="in-toc">流派秘伝</summary>
         <textarea name="schoolArtsNote" placeholder="流派秘伝全体の注釈（あれば）">$pc{schoolArtsNote}</textarea>

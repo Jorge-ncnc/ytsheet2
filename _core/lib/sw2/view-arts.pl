@@ -338,6 +338,7 @@ foreach my $set_url (split ',',$pc{schoolItemList}){
   }
 }
 $SHEET->param(SchoolItems => \@items);
+if(@items || $pc{schoolItemNote}){ $SHEET->param(SchoolItemsView => 1); }
 ### 秘伝 --------------------------------------------------
 my @arts;
 foreach my $num (1..$pc{schoolArtsNum}){
