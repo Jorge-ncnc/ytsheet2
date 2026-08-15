@@ -12,11 +12,14 @@
 /* // Body
 ---------------------------------------------------------------------------------------------------- */
 article, .color-set {
-  --item-head-bg-color: hsla(
-    var(--box-head-bg-color-h, 225),
-    calc( var(--box-head-bg-color-s,  9%) * 0.9 ),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.4)
+  --item-head-bg-color: color-mix(
+    in hsl,
+    #fff 70%,
+    hsl(
+      var(--box-head-bg-color-h, 225),
+      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+      var(--box-head-bg-color-l, 65%)
+    )
   );
   --s-icon-color: hsl(
     var(--box-head-bg-color-h, 0),
@@ -24,6 +27,12 @@ article, .color-set {
   );
   @media screen {
     .night & {
+      --item-head-bg-color: hsla(
+        var(--box-head-bg-color-h, 225),
+        calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+        var(--box-head-bg-color-l, 65%),
+        var(--box-head-bg-color-a, 0.4)
+      );
       --s-icon-color: hsl(
         var(--box-head-bg-color-h, 0),
         calc( var(--box-head-bg-color-s,   0%) * 0.9 ), 70%
