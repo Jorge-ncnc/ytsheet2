@@ -2,9 +2,8 @@
 
 :root{
   --theme-main-hue: 280;
-  --theme-sub-hue: 30;
-  --theme-accent-hue: 30;
-  --menu-icon-current-color   : #d00;
+  --theme-sub-hue: 280;
+  --theme-accent-hue: 280;
   --menu-icon-current-bg-color: #fff;
   --header-chroma: 0.04;
   --h2-color    : oklch(88% 0.03 var(--theme-sub-hue));

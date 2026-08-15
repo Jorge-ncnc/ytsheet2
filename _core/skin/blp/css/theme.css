@@ -1,14 +1,14 @@
 @charset "utf-8";
 
 :root{
-  --theme-main-hue  : 21;
+  --theme-main-hue  : 290;
   --theme-sub-hue   : 290;
-  --theme-accent-hue: 26;
+  --theme-accent-hue: 290;
   --theme-menu-hue: var(--theme-main-hue);
   --header-chroma: 0.05;
   --menu-icon-current-color   : #ffffff;
-  --menu-icon-current-bg-color: #d02530;
-  --icon--current-color: #d02530;
+  --menu-icon-current-bg-color: oklch(45% 0.12 var(--theme-accent-hue));
+  --icon--current-color: oklch(60% 0.1 var(--theme-accent-hue));
 }
 @media screen {
   .night {

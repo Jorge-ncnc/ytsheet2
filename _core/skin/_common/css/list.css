@@ -105,7 +105,7 @@ span[data-gender] {
     font-size: 1.2em;
   }
   &[data-gender=male]   { background-color: #07f3; }
-  &[data-gender=female] { background-color: #f003; }
+  &[data-gender=female] { background-color: #f5c4; }
   &[data-gender=cross]  { background-color: #70f3; }
   &[data-gender=none]   { background-color: #7773; }
   &[data-gender=unknown]{ background-color: #7773; }

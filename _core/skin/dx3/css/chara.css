@@ -559,9 +559,9 @@
     width: 1em;
     font-weight: bold;
   }
-  &[data-state="ロイス"]  { background: linear-gradient(to right,hsla(0,100%,50%,0.3) 1.1em, hsla(120,100%,50%,0.05) 1.1em); }
-  &[data-state="タイタス"]{ background: linear-gradient(to right,hsla(0,100%,50%,0.3) 1.1em, hsla(200,100%,50%,0.3 ) 1.1em); }
-  &[data-state="昇華"]    { background: linear-gradient(to right,hsla(0,100%,50%,0.3) 1.1em, hsla( 50,100%,50%,0.3 ) 1.1em); }
+  &[data-state="ロイス"]  { background: linear-gradient(to right,hsla(280,100%,50%,0.3) 1.1em, hsla(120,100%,50%,0.05) 1.1em); }
+  &[data-state="タイタス"]{ background: linear-gradient(to right,hsla(280,100%,50%,0.3) 1.1em, hsla(200,100%,50%,0.3 ) 1.1em); }
+  &[data-state="昇華"]    { background: linear-gradient(to right,hsla(280,100%,50%,0.3) 1.1em, hsla( 50,100%,50%,0.3 ) 1.1em); }
 }
 #lois table:not(:has(td.color:not(:empty))) .color {
   display: none;
@@ -712,7 +712,7 @@
   font-style: normal;
   font-weight: bold;
   line-height: 1;
-  color: hsl(0,30%,50%);
+  color: hsl(280,30%,50%);
 }
 .ef-dlois::before {
   content: 'D';
@@ -1210,7 +1210,7 @@
   border-bottom: hidden;
 
   & col.current {
-    background-color: hsla(340,100%,50%,0.3);
+    background-color: hsla(280,100%,50%,0.3);
   }
   & th {
     font-size: 80%;
@@ -1245,7 +1245,7 @@
   bottom: 0;
   font-size: 75%;
   line-height: 0.8;
-  color: #b00;
+  color: var(--accent-color);
 }
 
 /* // Free-Memo
