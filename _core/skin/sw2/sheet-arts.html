@@ -210,7 +210,7 @@
             <TMPL_IF head_schoolNote><h2><TMPL_VAR head_schoolNote></h2></TMPL_IF>
             <TMPL_IF schoolNote><p><TMPL_VAR schoolNote></p></TMPL_IF>
           </section>
-          <section class="box description">
+          <TMPL_IF SchoolItemsView><section class="box description">
             <h2><TMPL_IF head_schoolItemNote><TMPL_VAR head_schoolItemNote><TMPL_ELSE>流派アイテム</TMPL_IF></h2>
             <TMPL_IF schoolItemNote><p><TMPL_VAR schoolItemNote></p></TMPL_IF>
             <TMPL_IF SchoolItems><table class="item-table data-table">
@@ -231,7 +231,54 @@
                 </TMPL_LOOP>
             </tbody>
             </table></TMPL_IF>
-          </section>
+          </section></TMPL_IF>
+          <TMPL_IF SchoolMonsterSectionView><section class="box description">
+            <h2><TMPL_IF head_schoolMonsterNote><TMPL_VAR head_schoolMonsterNote><TMPL_ELSE><TMPL_IF SchoolMountOnly>騎獣データ<TMPL_ELSE>魔物データ</TMPL_IF></TMPL_IF></h2>
+            <TMPL_IF schoolMonsterNote><p><TMPL_VAR schoolMonsterNote></p></TMPL_IF>
+            <TMPL_IF SchoolMonsters><table class="monster-table data-table">
+              <thead>
+                <th class="name    ">名称
+                <th class="category">分類
+                <th class="level   ">レベル
+                <th class="parts   ">部位数
+                <th class="summary ">概要
+              </thead>
+              <tbody>
+                <TMPL_LOOP SchoolMonsters><tr>
+                  <td class="name    "><TMPL_VAR NAME>
+                  <td class="category"><TMPL_VAR TAXA>
+                  <td class="level   "><TMPL_VAR LEVEL>
+                  <td class="parts   "><TMPL_VAR PARTS>
+                  <td class="summary left"><TMPL_VAR SUMMARY>
+                </TMPL_LOOP>
+              </tbody>
+            </table></TMPL_IF>
+            <TMPL_IF SchoolMountView>
+              <TMPL_UNLESS SchoolMountOnly><h3>騎獣データ</h3></TMPL_UNLESS>
+              <table class="monster-table mount-table data-table">
+                <thead>
+                  <th class="name            ">名称
+                  <th class="category        ">分類
+                  <th class="level           ">適正レベル
+                  <th class="parts           ">部位数
+                  <th class="price           ">購入価格
+                  <th class="price-rental    ">レンタル価格
+                  <th class="price-regenerate">部位再生価格
+                </thead>
+                <tbody>
+                  <TMPL_LOOP SchoolMounts><tr>
+                    <td class="name            "><TMPL_VAR NAME>
+                    <td class="category        "><TMPL_VAR TAXA>
+                    <td class="level           "><TMPL_VAR LEVEL>
+                    <td class="parts           "><TMPL_VAR PARTS>
+                    <td class="price           "><TMPL_VAR PRICE>
+                    <td class="price-rental    "><TMPL_VAR PRICE_RENTAL>
+                    <td class="price-regenerate"><TMPL_VAR PRICE_REGENERATE>
+                  </TMPL_LOOP>
+                </tbody>
+              </table>
+            </TMPL_IF>
+          </section></TMPL_IF>
         </div>
         <section id="mystic-arts" class="description">
           <TMPL_IF ArtsView><h2>秘伝</h2>
@@ -251,22 +298,41 @@
           </div>
           </TMPL_LOOP></TMPL_IF>
           
-          <TMPL_IF schoolMagicView><h2>秘伝魔法</h2>
+          <TMPL_IF schoolMagicView><h2>秘伝魔法／練技・呪歌など</h2>
           <TMPL_IF schoolMagicNote><div class="box"><p><TMPL_VAR schoolMagicNote></p></div></TMPL_IF>
           <TMPL_LOOP schoolMagicData>
-          <div class="data-magic">
-            <dl class="name    "><dt><TMPL_VAR LEVEL><dd><div><TMPL_VAR ICON><TMPL_VAR DIVINE_MARK>【<TMPL_VAR NAME>】<TMPL_VAR ALIAS></div></dl>
-            <dl class="a-cost  "><dt><span>必要名誉点</span><dd><TMPL_VAR A-COST></dl>
-            <dl class="cost    "><dt>消費      <dd><TMPL_VAR COST></dl>
-            <dl class="target  "><dt>対象      <dd><TMPL_VAR TARGET></dl>
-            <dl class="range   "><dt>射程/<br>形状<dd><TMPL_VAR RANGE>／<wbr><TMPL_VAR FORM></dl>
-            <dl class="duration"><dt>時間      <dd><TMPL_VAR DURATION></dl>
-            <dl class="resist  "><dt>抵抗      <dd><TMPL_VAR RESIST></dl>
-            <TMPL_IF ELEMENT><dl class="element" ><dt>属性<dd><TMPL_VAR ELEMENT></dl></TMPL_IF>
+          <div class="school-magic">
+            <h3><TMPL_VAR CLASS></h3>
+            <div class="data-magic <TMPL_VAR CLASS_EN>">
+            <div class="school-magic-name">
+              <dl class="name color-set"><dt><TMPL_VAR LEVEL><dd><div><TMPL_VAR ICON><TMPL_VAR DIVINE_MARK>【<TMPL_VAR NAME>】</div><TMPL_IF ALIAS><span class="alias"><TMPL_VAR ALIAS></span></TMPL_IF><small><TMPL_VAR NAME_NOTES></small></dl>
+              <dl class="a-cost"><dt><span>必要名誉点</span><dd><TMPL_VAR ACQUIRE_COST></dl>
+            </div>
+            <TMPL_IF CostOn         ><dl class="cost     "><dt>消費         <dd><TMPL_VAR COST></dl></TMPL_IF>
+            <TMPL_IF TargetOn       ><dl class="target   "><dt>対象         <dd><TMPL_VAR TARGET></dl></TMPL_IF>
+            <TMPL_IF RangeOn        ><dl class="range    "><dt>射程/<br>形状<dd><TMPL_VAR RANGE>／<wbr><TMPL_VAR FORM></dl></TMPL_IF>
+            <TMPL_IF DurationOn     ><dl class="duration "><dt>時間         <dd><TMPL_VAR DURATION></dl></TMPL_IF>
+            <TMPL_IF ResistOn       ><dl class="resist   "><dt>抵抗         <dd><TMPL_VAR RESIST></dl></TMPL_IF>
+            <TMPL_IF ElementOn      ><dl class="element  "><dt>属性         <dd><TMPL_VAR ELEMENT DEFAULT="―"></dl></TMPL_IF>
+            <TMPL_IF SongOn         ><dl class="sing     "><dt>歌唱         <dd><TMPL_VAR SONG_SING DEFAULT="なし"></dl></TMPL_IF>
+            <TMPL_IF SongOn         ><dl class="pet      "><dt>ペット       <dd><TMPL_VAR SONG_PET DEFAULT="―"></dl></TMPL_IF>
+            <TMPL_IF ConditionOn    ><dl class="condition"><dt>条件         <dd><TMPL_VAR CONDITION></dl></TMPL_IF>
+            <TMPL_IF SongOn         ><dl class="basepoint"><dt>基礎楽素     <dd><TMPL_VAR SONG_BASE_POINT></dl></TMPL_IF>
+            <TMPL_IF SongOn         ><dl class="setpoint "><dt>巧奏値       <dd><TMPL_VAR SONG_SET_POINT></dl></TMPL_IF>
+            <TMPL_IF SongOn         ><dl class="addpoint "><dt>追加楽素     <dd><TMPL_VAR SONG_ADD_POINT></dl></TMPL_IF>
+            <TMPL_IF TypeOn         ><dl class="type     "><dt><TMPL_VAR TYPE_DT DEFAULT="対応"><dd><TMPL_VAR TYPE></dl></TMPL_IF>
+            <TMPL_IF PremiseOn      ><dl class="premise  "><dt>前提         <dd><TMPL_VAR PREMISE></dl></TMPL_IF>
+            <TMPL_IF PartOn         ><dl class="part     "><dt>適用部位     <dd><TMPL_VAR APPLY_PART></dl></TMPL_IF>
+            <TMPL_IF HumanFormOn    ><dl class="human-form"><dt>人間形態時  <dd><TMPL_VAR APPLY_HUMAN_FORM></dl></TMPL_IF>
+            <TMPL_IF RankOn         ><dl class="rank     "><dt>ランク       <dd><TMPL_VAR RANK></dl></TMPL_IF>
+            <TMPL_IF CommandCostOn  ><dl class="ccost    "><dt>陣気コスト   <dd><TMPL_VAR COMMAND_COST></dl></TMPL_IF>
+            <TMPL_IF CommandChargeOn><dl class="ccharge  "><dt>陣気蓄積     <dd><TMPL_VAR COMMAND_CHARGE></dl></TMPL_IF>
             <dl class="summary "><dt>概要      <dd><TMPL_VAR SUMMARY></dl>
             <dl class="effect  "><dt><TMPL_IF head_EFFECT><TMPL_VAR head_EFFECT><TMPL_ELSE>効果</TMPL_IF><dd class="box"><p><TMPL_VAR EFFECT></p></dl>
+            </div>
           </div>
           </TMPL_LOOP></TMPL_IF>
+
         </section>
         <TMPL_IF schoolQnA><section id="q-and-a" class="box description">
           <h2><TMPL_IF head_schoolQnA><TMPL_VAR head_schoolQnA><TMPL_ELSE>Ｑ＆Ａ</TMPL_IF></h2>

@@ -27,17 +27,21 @@ foreach(@data::class_names){
   elsif($_ eq 'コンジャラー'){
     push(@magic_classes, $data::class{$_}{magic}{jName}, '深智魔法');
   }
-  elsif($_ eq 'バード'){
+  elsif($data::class{$_}{magic}) { push(@magic_classes, $data::class{$_}{magic}{jName}); }
+
+  if($_ eq 'バード'){
     push(@craft_classes, $data::class{$_}{craft}{jName}, '終律');
   }
   elsif($_ eq 'ウォーリーダー'){
     push(@craft_classes, '鼓咆','陣率');
   }
-  elsif($data::class{$_}{magic}) { push(@magic_classes, $data::class{$_}{magic}{jName}); }
   elsif($data::class{$_}{craft}) { push(@craft_classes, $data::class{$_}{craft}{jName}); }
 }
+@magic_classes = deduplicate(@magic_classes); #重複削除
+@craft_classes = deduplicate(@craft_classes); #重複削除
 push(@magic_classes, @craft_classes);
 @magic_classes = deduplicate(@magic_classes); #重複削除
+my @school_magic_classes = grep { $_ !~ /^(?:LABEL=|GROUPCLOSE$)/ } @magic_classes;
 ### データ読み込み ###################################################################################
 my ($data, $file, $message) = loadSheetData();
 our %pc = %{ $data };
@@ -75,6 +79,10 @@ setDefaultColors(\%pc);
 ## その他
 $pc{schoolArtsNum} ||= 3;
 $pc{schoolMagicNum} ||= 1;
+foreach my $num (1..$pc{schoolMagicNum}){
+  $pc{"schoolMagic${num}Level"} = $pc{"schoolMagic${num}Lv"}
+    if !defined $pc{"schoolMagic${num}Level"} && defined $pc{"schoolMagic${num}Lv"};
+}
 
 ### 折り畳み判断 --------------------------------------------------
 my %open;
@@ -82,6 +90,7 @@ foreach (1..$pc{schoolArtsNum} ){ if($pc{"schoolArts${_}Name"} ){ $open{schoolAr
 foreach (1..$pc{schoolMagicNum}){ if($pc{"schoolMagic${_}Name"}){ $open{schoolMagic} = 'open'; last; } }
 if($pc{schoolArtsNote} ){ $open{schoolArts}  = 'open'; }
 if($pc{schoolMagicNote}){ $open{schoolMagic} = 'open'; }
+if($pc{schoolMonsterNote} || ($pc{schoolMonsterList} || '') =~ /[^,\s]/){ $open{schoolMonster} = 'open'; }
 if($pc{schoolQnA}      ){ $open{schoolQnA}   = 'open'; }
 if($pc{godQnA}         ){ $open{godQnA}      = 'open'; }
 
@@ -89,7 +98,7 @@ if($pc{godQnA}         ){ $open{godQnA}      = 'open'; }
 convertEscapedBrToNewlines(\%pc,
   qw/magicEffect magicDescription
   godSymbol godDeity godNote godQnA
-  schoolNote schoolItemNote schoolArtsNote schoolMagicNote schoolQnA
+  schoolNote schoolItemNote schoolMonsterNote schoolArtsNote schoolMagicNote schoolQnA
   skillRankB_effect skillRankA_effect skillRankS_effect skillRankSS_effect
   /,
   ( map { "godMagic${_}Effect"    } 2,4,7,10,13 ),
@@ -101,6 +110,19 @@ convertEscapedBrToNewlines(\%pc,
 ### 画像 --------------------------------------------------
 my $imageMaxSize = $set::image_maxsize / 4;
 my $imageMaxSizeView = $imageMaxSize >= 1048576 ? sprintf("%.3g",$imageMaxSize/1048576).'MB' : sprintf("%.3g",$imageMaxSize/1024).'KB';
+
+### 参照魔物 --------------------------------------------------
+my (@school_monster_rows, @school_mount_rows);
+foreach my $url (grep $_, split ',', ($pc{schoolMonsterList} || '')){
+  my %data = loadMonsterData($url);
+  my $row = renderSchoolMonsterRow($url, \%data);
+  if(($data{type} || '') eq 'm' && ($data{characterName} || $data{monsterName}) && $data{mount}){
+    push(@school_mount_rows, $row);
+  }
+  else {
+    push(@school_monster_rows, $row);
+  }
+}
 
 ### フォーム表示 #####################################################################################
 print renderEditPageStart(
@@ -243,40 +265,64 @@ print <<"HTML";
         <dl class="area  "><dt>地域      <dd>@{[ input 'schoolArea','','','placeholder="大陸・地方など"' ]}</dl>
         <dl class="req   "><dt>入門条件  <dd>@{[ input 'schoolReq','','','list="list-school-req"' ]}</dl>
         <dl class="note  "><dt>詳細      <dd><textarea name="schoolNote">$pc{schoolNote}</textarea></dl>
-        <dl class="arms  "><dt>流派アイテム<dd><textarea name="schoolItemNote" placeholder="流派アイテムの概要">$pc{schoolItemNote}</textarea></dl>
-        <dl class="arms  "><dt>アイテム一覧
-          <dd>
-            <input type="text" id="schoolItemUrl" placeholder="アイテムシートのURL"><span class="button" onclick="addSchoolItem()">追加</span>
-            @{[ input 'schoolItemList','hidden' ]}
-            <table id="school-item-list" class="data-table">
-              <thead>
-                <th>名前
-                <th>カテゴリ
-                <th>概要
-                <th>
-              <tbody>
-                @{[ map {
-                  my %item = loadItemData($_);
-                  $item{category} =~ s/\s/<hr>/g;
-                  <<~"HTML";
-                  <tr>
-                  ${\ do {
-                    if(exists $item{itemName}) {
-                      qq|<td><a href="$_" target="_blank">|.unescapeTags($item{itemName})."</a>";
-                    }
-                    else {
-                      qq|<td><a href="$_" target="_blank" class="failed">データ取得失敗</a>|;
-                    }
-                  }}
-                  <td>@{[ unescapeTags $item{category} ]}
-                  <td>@{[ unescapeTags $item{summary} ]}
-                  <td class='button' onclick="delSchoolItem(this,'$_')">×
-                  HTML
-                } split ',',$pc{schoolItemList} ]}
-          </table>
-        </dl>
       </div>
-      <details class="box" $open{schoolArts}>
+      <details class="box" open>
+        <summary class="in-toc">流派アイテム</summary>
+        <textarea name="schoolItemNote" placeholder="流派アイテムの概要">$pc{schoolItemNote}</textarea>
+        <div class="input-data">
+          <dl class="arms  "><dt>アイテム一覧
+            <dd>
+              <input type="text" id="schoolItemUrl" placeholder="アイテムシートのURL"><span class="button" onclick="addSchoolItem()">追加</span>
+              @{[ input 'schoolItemList','hidden' ]}
+              <table id="school-item-list" class="data-table">
+                <thead>
+                  <th>名前
+                  <th>カテゴリ
+                  <th>概要
+                  <th>
+                <tbody>
+                  @{[ map {
+                    my %item = loadItemData($_);
+                    $item{category} =~ s/\s/<hr>/g;
+                    <<~"HTML";
+                    <tr>
+                    ${\ do {
+                      if(exists $item{itemName}) {
+                        qq|<td><a href="$_" target="_blank">|.unescapeTags($item{itemName})."</a>";
+                      }
+                      else {
+                        qq|<td><a href="$_" target="_blank" class="failed">データ取得失敗</a>|;
+                      }
+                    }}
+                    <td>@{[ unescapeTags $item{category} ]}
+                    <td>@{[ unescapeTags $item{summary} ]}
+                    <td class='button' onclick="delSchoolItem(this,'$_')">×
+                    HTML
+                  } split ',',$pc{schoolItemList} ]}
+              </table>
+          </dl>
+        </div>
+      </details>
+      <details class="box" id="school-monster-section" $open{schoolMonster}>
+        <summary class="in-toc">魔物データ</summary>
+        <textarea name="schoolMonsterNote" placeholder="魔物データの概要。騎獣、妖精、ゴーレムなど">$pc{schoolMonsterNote}</textarea>
+        <div class="input-data">
+          <dl class="arms"><dt>魔物一覧
+            <dd>
+              <input type="text" id="schoolMonsterUrl" placeholder="魔物シートのURL"><span class="button" onclick="addSchoolMonster()">追加</span>
+              @{[ input 'schoolMonsterList','hidden' ]}
+              <table id="school-monster-list" class="data-table school-reference-list">
+                <thead><tr><th>名称<th>分類<th>概要<th>
+                <tbody>@school_monster_rows
+              </table>
+              <table id="school-mount-list" class="data-table school-reference-list">
+                <thead><tr><th>名称<th>分類<th>適正レベル<th>部位数<th>購入価格<th>レンタル価格<th>部位再生価格<th>
+                <tbody>@school_mount_rows
+              </table>
+          </dl>
+        </div>
+      </details>
+      <details class="box" id="school-arts-section" $open{schoolArts}>
         <summary class="in-toc">流派秘伝</summary>
         <textarea name="schoolArtsNote" placeholder="流派秘伝全体の注釈（あれば）">$pc{schoolArtsNote}</textarea>
         <hr style="margin:0">
@@ -305,30 +351,13 @@ print <<"HTML";
         </div>
       @{[ renderAddDelButtons('school-arts') ]}
       </details>
-      <details class="box" $open{schoolMagic}>
-        <summary class="in-toc">流派秘伝魔法</summary>
+      <details class="box" id="school-magic-section" $open{schoolMagic}>
+        <summary class="in-toc">流派秘伝魔法／練技・呪歌など</summary>
         <textarea name="schoolMagicNote" placeholder="流派秘伝魔法全体の注釈（あれば）">$pc{schoolMagicNote}</textarea>
         <div id="school-magic-list">
           @{[ renderTemplateLoop(
             'school-magic',
-            sub ($num) {
-              return <<~"ROW";
-              <div class="input-data" id="school-magic-row${num}">
-                <div class="handle"></div>
-                <dl class="name    "><dt>名称      <dd>【@{[ input "schoolMagic${num}Name",'' ]}】<br>@{[ checkbox "schoolMagic${num}ActionTypeMinor",'補助動作' ]}@{[ checkbox "schoolMagic${num}ActionTypeSetup",'戦闘準備' ]}</dl>
-                <dl class="cost    "><dt>必要名誉点<dd>@{[ input "schoolMagic${num}AcquireCost" ]}</dl>
-                <dl class="level   "><dt>習得レベル<dd>@{[ input "schoolMagic${num}Lv" ]}</dl>
-                <dl class="cost    "><dt>消費      <dd>@{[ input "schoolMagic${num}Cost",'','','list="list-cost"' ]}</dl>
-                <dl class="target  "><dt>対象      <dd>@{[ input "schoolMagic${num}Target",'','','list="list-target"' ]}</dl>
-                <dl class="range   "><dt>射程／形状<dd>@{[ input "schoolMagic${num}Range",'','','list="list-range"' ]}／@{[ input "schoolMagic${num}Form",'','','list="list-form"' ]}</dl>
-                <dl class="duration"><dt>時間      <dd>@{[ input "schoolMagic${num}Duration",'','','list="list-duration"' ]}</dl>
-                <dl class="resist  "><dt>抵抗      <dd>@{[ input "schoolMagic${num}Resist",'','','list="list-resist"' ]}</dl>
-                <dl class="element "><dt>属性      <dd>@{[ input "schoolMagic${num}Element",'','','list="list-element"' ]}</dl>
-                <dl class="summary "><dt>概要      <dd>@{[ input "schoolMagic${num}Summary" ]}</dl>
-                <dl class="effect  "><dt>効果      <dd><textarea name="schoolMagic${num}Effect">$pc{"schoolMagic${num}Effect"}</textarea></dl>
-              </div>
-              ROW
-            }
+            sub ($num) { renderSchoolMagicRow($num) }
           ) ]}
         </div>
         @{[ renderAddDelButtons('school-magic') ]}
@@ -401,6 +430,83 @@ print renderEditPageEnd(
   notes => '(C)Group SNE「ソード・ワールド'.($::SW2_0 ? '2.0' : '2.5').'」',
   extraHtml => renderDataList(),
 );
+
+sub renderSchoolMonsterRow ($url, $data_ref = undef) {
+  my %data = $data_ref ? %{$data_ref} : loadMonsterData($url);
+  my $valid = ($data{type} || '') eq 'm' && ($data{characterName} || $data{monsterName});
+  my $name = $data{characterName} || $data{monsterName};
+  $name .= '【'.$data{monsterName}.'】' if $data{characterName} && $data{monsterName};
+  my $level = $data{mount}
+    ? join('～', grep { defined && $_ ne '' } @data{qw/lvMin lvMax/}) || $data{lv}
+    : $data{lv};
+  my $summary = join('／', grep $_, $level, ($data{mount} ? $data{price} : $data{habitat}));
+  $summary = $data{_error} || '魔物データではありません。' unless $valid;
+  $name = $valid ? unescapeTags($name) : 'データ取得失敗';
+  if($valid && $data{mount}){
+    return <<~"HTML";
+      <tr data-reference-url="$url"><td><a href="$url" target="_blank">$name</a>
+      <td>@{[ unescapeTags($data{taxa}) ]}<td>@{[ unescapeTags($level) ]}<td>@{[ unescapeTags($data{partsNum}) ]}
+      <td>@{[ formatSchoolMountPrice($data{price}) ]}<td>@{[ formatSchoolMountPrice($data{priceRental}) ]}<td>@{[ formatSchoolMountPrice($data{priceRegenerate}) ]}
+      <td><button type="button" onclick="delSchoolMonster(this,'$url')">×</button>
+      HTML
+  }
+  return <<~"HTML";
+    <tr data-reference-url="$url"><td><a href="$url" target="_blank" class="@{[ $valid ? '' : 'failed' ]}">$name</a>
+    <td>@{[ unescapeTags($data{taxa}) ]}<td>@{[ unescapeTags($summary) ]}<td><button type="button" onclick="delSchoolMonster(this,'$url')">×</button>
+    HTML
+}
+
+sub formatSchoolMountPrice ($value) {
+  return '' unless defined $value && $value ne '';
+  my $annotation = $value =~ s/([(（].+?[）)])$// ? $1 : '';
+  my $unit = $value =~ /\d$/ ? 'G' : '';
+  return unescapeTags(commify($value).$unit.$annotation);
+}
+
+sub renderSchoolMagicRow ($num) {
+  my $prefix = "schoolMagic${num}";
+  return <<~"ROW";
+    <div class="input-data school-magic-data" id="school-magic-row${num}">
+      <div class="handle"></div>
+      <dl class="name"><dt>名称<dd>【@{[ input "${prefix}Name",'' ]}】<br>
+        <span class="action-passive">@{[ checkbox "${prefix}ActionTypePassive",'常時' ]}</span>
+        <span class="action-major">@{[ checkbox "${prefix}ActionTypeMajor",'主動作' ]}</span>
+        @{[ checkbox "${prefix}ActionTypeMinor",'補助動作' ]}@{[ checkbox "${prefix}ActionTypeSetup",'戦闘準備' ]}
+      </dl>
+      <dl class="class"><dt>系統<dd>@{[ selectInput "${prefix}Class","checkSchoolMagicClass(this)",@school_magic_classes ]}</dl>
+      <dl class="acquire-cost"><dt>必要名誉点<dd>@{[ input "${prefix}AcquireCost" ]}</dl>
+      @{[ renderSchoolMagicInputs($prefix) ]}
+    </div>
+  ROW
+}
+
+sub renderSchoolMagicInputs ($prefix) {
+  return <<~"ROW";
+      <dl class="minor"><dt>種別<dd>@{[ checkbox "${prefix}Minor",'小魔法' ]}</dl>
+      <dl class="sphere"><dt>マギスフィア<dd>@{[ input "${prefix}Magisphere",'', '', 'list="list-sphere"' ]}</dl>
+      <dl class="level"><dt>習得レベル<dd>@{[ input "${prefix}Level" ]}</dl>
+      <dl class="type"><dt>対応<dd>@{[ input "${prefix}Type",'', '', 'list="list-type"' ]}</dl>
+      <dl class="premise"><dt>前提<dd>@{[ input "${prefix}Premise",'', '', 'list="list-premise"' ]}</dl>
+      <dl class="cost"><dt>消費<dd>@{[ input "${prefix}Cost",'', '', 'list="list-cost"' ]}</dl>
+      <dl class="target"><dt>対象<dd>@{[ input "${prefix}Target",'', '', 'list="list-target"' ]}</dl>
+      <dl class="range"><dt>射程／形状<dd>@{[ input "${prefix}Range",'', '', 'list="list-range"' ]}／@{[ input "${prefix}Form",'', '', 'list="list-form"' ]}</dl>
+      <dl class="duration"><dt>時間<dd>@{[ input "${prefix}Duration",'', '', 'list="list-duration"' ]}</dl>
+      <dl class="song"><dt>歌唱<dd>@{[ checkbox "${prefix}SongSing",'必要' ]}</dl>
+      <dl class="song"><dt>ペット<dd>@{[ checkbox "${prefix}SongPetBird",'小鳥' ]}@{[ checkbox "${prefix}SongPetFrog",'蛙' ]}@{[ checkbox "${prefix}SongPetBug",'虫' ]}</dl>
+      <dl class="condition"><dt>条件<dd>@{[ input "${prefix}Condition",'', '', 'list="list-song-condition"' ]}</dl>
+      <dl class="song"><dt>楽素<dd>基礎@{[ input "${prefix}SongBasePoint",'', '', 'list="list-songpoint"' ]} 巧奏値@{[ input "${prefix}SongSetPoint",'', '', 'list="list-song-set-point"' ]} 追加@{[ input "${prefix}SongAddPoint",'', '', 'list="list-songpoint"' ]}</dl>
+      <dl class="rider"><dt>対応<dd>@{[ checkbox "${prefix}MountTypeAnimal",'動物' ]}@{[ checkbox "${prefix}MountTypeCryptid",'幻獣' ]}@{[ checkbox "${prefix}MountTypeMachine",'魔動機' ]}</dl>
+      <dl class="part"><dt>適用部位<dd>@{[ input "${prefix}ApplyPart",'', '', 'list="list-part"' ]}</dl>
+      <dl class="human-form"><dt>人間形態時<dd>@{[ radios "${prefix}ApplyHumanForm",'', 'available=>有効','unavailable=>無効','=>指定なし（変身しない種族用）' ]}</dl>
+      <dl class="rank"><dt>ランク<dd>@{[ input "${prefix}Rank" ]}</dl>
+      <dl class="commcost"><dt>陣気コスト<dd>@{[ input "${prefix}CommandCost",'number' ]}消費</dl>
+      <dl class="command"><dt>陣気蓄積<dd>＋@{[ input "${prefix}CommandCharge",'number' ]}</dl>
+      <dl class="resist"><dt>抵抗<dd>@{[ input "${prefix}Resist",'', '', 'list="list-resist"' ]}</dl>
+      <dl class="element"><dt>属性<dd>@{[ input "${prefix}Element",'', '', 'list="list-element"' ]}</dl>
+      <dl class="summary"><dt>概要<dd>@{[ input "${prefix}Summary" ]}</dl>
+      <dl class="effect"><dt>効果<dd><textarea name="${prefix}Effect">$pc{"${prefix}Effect"}</textarea></dl>
+  ROW
+}
 
 sub renderDataList {
   return <<~"HTML";

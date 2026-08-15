@@ -84,7 +84,8 @@ article {
 
 /* // MagicData
 ---------------------------------------------------------------------------------------------------- */
-#magic > h2 {
+#magic > h2,
+#mystic-arts .school-magic > h3 {
   width: max-content;
   padding: .4em .5em .3em;
   border-radius: 5px 5px 0 0;
@@ -163,9 +164,11 @@ article {
   & dl.risk      { grid-area: RISK; }
   
   & dl.a-cost    { grid-area: ACST; }
+  & dl.class     { grid-area: CLSS; }
 }
 
-.data-magic > dl {
+.data-magic > dl,
+.school-magic-name > dl {
   display: grid;
   grid-template-columns: 3.5em 1fr;
   border-width: 1px 0 0 1px;
@@ -355,15 +358,21 @@ article {
   font-size: 75%;
   transform: scaleY(calc(1/0.75));
 }
-#mystic-arts .data-magic:not(.data-arts) {
-  grid-template-columns: 1.1fr 1.1fr 0.35fr 0.65fr 0.8fr;
-  grid-template-areas:
-    "NAME NAME NAME ACST COST"
-    "TRGT RANG DURA DURA RESI"
-    "SMRY SMRY SMRY SMRY ELEM"
-    "EFCT EFCT EFCT EFCT EFCT"
-  ;
-  & dl.a-cost {
+#mystic-arts .school-magic {
+  margin-top: 1em;
+  break-inside: avoid;
+  & + & { margin-top: 1.5em; }
+  & > h3 { margin: 0; }
+  & > .data-magic { margin-top: 0; }
+}
+#mystic-arts .school-magic-name {
+  grid-area: NAME;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10em;
+  & > dl {
+    grid-area: auto;
+  }
+  & > dl.a-cost {
     grid-template-columns: 4.2em 1fr;
   }
 }
@@ -376,10 +385,14 @@ article {
   .data-magic dl dd {
     text-align: left !important;
   }
+  #mystic-arts .school-magic-name {
+    display: block;
+  }
 }
 
 .data-magic > h3,
-.data-magic > dl > dt {
+.data-magic > dl > dt,
+.school-magic-name > dl > dt {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -387,7 +400,8 @@ article {
   border-width: 0 1px 0 0;
   border-style: solid;
 }
-.data-magic > dl > dt {
+.data-magic > dl > dt,
+.school-magic-name > dl > dt {
   min-height: 1.9em;
   line-height: 1;
   padding: 2px 0px;
@@ -396,7 +410,8 @@ article {
 .data-magic dl.name {
   grid-template-columns: 3.5em 1fr;
 }
-.data-magic > dl > dd {
+.data-magic > dl > dd,
+.school-magic-name > dl > dd {
   padding: .2em 0;
   text-align: center;
   align-content: center;
@@ -576,7 +591,8 @@ div.data dl.effects table {
   }
 }
 
-.item-table {
+.item-table,
+.monster-table {
   margin-top: 1em;
   
 
@@ -608,6 +624,36 @@ div.data dl.effects table {
       .category   { width: 8.5em; }
       .price      { width: 6em; }
     }
+  }
+}
+.monster-table > thead {
+  .category { width: 8em; }
+  .level,
+  .parts    { width: 4em; }
+}
+.mount-table > thead {
+  .name             { width: 11em; }
+  .category         { width: 6em; }
+  .level            { width: 4.5em; }
+  .parts            { width: 3.5em; }
+  .price            { width: 5.5em; }
+  .price-rental     { width: 6em; }
+  .price-regenerate { width: 6em; }
+}
+@media screen and (width <= 735px){
+  .monster-table > thead {
+    .category { width: 6em; }
+    .level,
+    .parts    { width: 3.5em; }
+  }
+  .mount-table > thead {
+    .name             { width: 8em; }
+    .category         { width: 5em; }
+    .level            { width: 4em; }
+    .parts            { width: 3em; }
+    .price,
+    .price-rental     { width: 5em; }
+    .price-regenerate { width: 5.5em; }
   }
 }
 a.failed::before {

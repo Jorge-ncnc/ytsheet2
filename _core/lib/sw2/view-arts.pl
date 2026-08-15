@@ -9,8 +9,8 @@ use open ":utf8";
 
 ### データ／テンプレート読込 #########################################################################
 (my $pcRef, my $SHEET) = setupViewBase(
-  unescapeLinesRe   => qr/(?:Effect|Description|Note|QnA)$/,
-  unescapeSkipKeys  => [qw/schoolItemList/],
+  unescapeLinesRe   => qr/(?:Effects?|Description|Note|QnA)$/,
+  unescapeSkipKeys  => [qw/schoolItemList schoolMonsterList/],
   maskSkipKeys      => ['category'],
   nameSub           => \&setArtsName,
   updateSub => \&upgradeArtsData,
@@ -107,6 +107,8 @@ sub maskPcData {
     }
   }
   ## 流派
+  $pc->{schoolMonsterList} = '';
+  $pc->{schoolMonsterNote} = '';
   unless($forbidden eq 'battle'){
     $pc->{schoolName} = noiseText(2,12);
     $pc->{schoolArea} = noiseText(5,10);
@@ -140,6 +142,7 @@ sub maskPcData {
     }
   }
   $pc->{"schoolMagicNum"} = 0;
+
   ## 特殊能力
   unless($forbidden eq 'battle'){
     $pc->{skillName} = noiseText(2,12);
@@ -171,6 +174,9 @@ elsif($pc{category} eq 'school'){
 elsif($pc{category} eq 'skill'){
   $SHEET->param(categorySkill => 1);
 }
+
+### 流派内データの表示判定 --------------------------------------------------
+my $school_monster_view = $pc{schoolMonsterNote} || ($pc{schoolMonsterList} || '') =~ /[^,\s]/;
 
 ### 魔法 --------------------------------------------------
 {
@@ -338,6 +344,72 @@ foreach my $set_url (split ',',$pc{schoolItemList}){
   }
 }
 $SHEET->param(SchoolItems => \@items);
+if(@items || $pc{schoolItemNote}){ $SHEET->param(SchoolItemsView => 1); }
+### 参照魔物 --------------------------------------------------
+my (@school_monsters, @school_mounts);
+if($school_monster_view){
+  my ($monsters, $mounts) = buildSchoolMonsterReferences($pc{schoolMonsterList});
+  @school_monsters = @{$monsters};
+  @school_mounts = @{$mounts};
+}
+$SHEET->param(SchoolMonsterSectionView => $school_monster_view ? 1 : 0);
+$SHEET->param(SchoolMonsterView => @school_monsters ? 1 : 0);
+$SHEET->param(SchoolMountView => @school_mounts ? 1 : 0);
+$SHEET->param(SchoolMountOnly => !@school_monsters && @school_mounts ? 1 : 0);
+$SHEET->param(SchoolMonsters => \@school_monsters);
+$SHEET->param(SchoolMounts => \@school_mounts);
+
+sub buildSchoolMonsterReferences {
+  my ($list) = @_;
+  my (@monsters, @mounts);
+  foreach my $url (grep $_, split ',', ($list || '')){
+    eval { require $set::lib_convert; };
+    my %data = loadMonsterData($url);
+    my $valid = ($data{type} || '') eq 'm' && ($data{characterName} || $data{monsterName});
+    unless($valid){
+      push(@monsters, {
+        NAME => qq|<a href="$url" target="_blank" class="failed">データ取得失敗</a>|,
+        SUMMARY => $data{_error} || '魔物データではありません。',
+      });
+      next;
+    }
+    my $name = $data{characterName} || $data{monsterName};
+    $name .= '【'.$data{monsterName}.'】' if $data{characterName} && $data{monsterName};
+    my $level = $data{lv};
+    if($data{mount}){
+      $level = $data{lvMin} || $data{lvMax} || $data{lv};
+      $level .= '～'.$data{lvMax}
+        if $data{lvMin} && $data{lvMax} && $data{lvMin} ne $data{lvMax};
+    }
+    my $summary = join('／', grep $_, $data{disposition}, $data{habitat});
+    my $row = {
+      NAME => qq|<a href="$url" target="_blank">|.unescapeTags($name).'</a>',
+      TAXA => unescapeTags($data{taxa}),
+      LEVEL => unescapeTags($level),
+      PARTS => unescapeTags($data{partsNum}),
+      SUMMARY => unescapeTags($summary),
+    };
+    if($data{mount}){
+      $row->{PRICE} = formatSchoolMountPrice($data{price});
+      $row->{PRICE_RENTAL} = formatSchoolMountPrice($data{priceRental});
+      $row->{PRICE_REGENERATE} = formatSchoolMountPrice($data{priceRegenerate});
+      push(@mounts, $row);
+    }
+    else {
+      push(@monsters, $row);
+    }
+  }
+  return (\@monsters, \@mounts);
+}
+
+sub formatSchoolMountPrice {
+  my ($value) = @_;
+  return '' unless defined $value && $value ne '';
+  my $annotation = $value =~ s/([(（].+?[）)])$// ? $1 : '';
+  my $unit = $value =~ /\d$/ ? 'G' : '';
+  return unescapeTags(commify($value).$unit.$annotation);
+}
+
 ### 秘伝 --------------------------------------------------
 my @arts;
 foreach my $num (1..$pc{schoolArtsNum}){
@@ -377,38 +449,149 @@ if(@arts || $pc{schoolArtsNote}){ $SHEET->param(ArtsView => 1); }
 
 my @schoolmagics;
 foreach my $num (1..$pc{schoolMagicNum}){
-  next if !($pc{'schoolMagic'.$num.'Name'});
-  my $icon;
-  if($pc{'schoolMagic'.$num.'ActionTypeMinor'}){ $icon .= '<i class="s-icon minor">≫</i>' }
-  if($pc{'schoolMagic'.$num.'ActionTypeSetup'}){ $icon .= '<i class="s-icon setup">△</i>' }
-  $pc{'schoolMagic'.$num.'Effect'} =~ s#<h2>(.+?)</h2>#</dd><dt><span class="center">$1</span></dt><dd class="box">#gi;
-
-  my $schoolMagicName = $pc{'schoolMagic'.$num.'Name'};
-  (my $divineMark, $schoolMagicName) = extractDivineMark $schoolMagicName;
-  my $alias;
-  if($schoolMagicName =~ s/\s?[－―‐–—─\-](.+?)[－―‐–—─\-]$//){ $alias = "－$1－" }
-
-  push(@schoolmagics, {
-    "NAME"     => renderCharacterName($schoolMagicName),
-    "ALIAS"    => $alias,
-    "DIVINE_MARK" => $divineMark,
-    "LEVEL"    => $pc{'schoolMagic'.$num.'Lv'},
-    "ICON"     => $icon,
-    "A-COST"   => $pc{'schoolMagic'.$num.'AcquireCost'},
-    "COST"     => $pc{'schoolMagic'.$num.'Cost'},
-    "TARGET"   => textMagic($pc{'schoolMagic'.$num.'Target'}),
-    "RANGE"    => $pc{'schoolMagic'.$num.'Range'},
-    "FORM"     => $pc{'schoolMagic'.$num.'Form'},
-    "DURATION" => textMagic($pc{'schoolMagic'.$num.'Duration'}),
-    "RESIST"   => $pc{'schoolMagic'.$num.'Resist'},
-    "ELEMENT"  => $pc{'schoolMagic'.$num.'Element'},
-    "SUMMARY"  => $pc{'schoolMagic'.$num.'Summary'},
-    "EFFECT"   => $pc{'schoolMagic'.$num.'Effect'},
-    "head_EFFECT" => $pc{'head_schoolMagic'.$num.'Effect'},
-  } );
+  my $prefix = "schoolMagic${num}";
+  next unless $pc{"${prefix}Name"};
+  push(@schoolmagics, buildSchoolMagicData($pc{"${prefix}Class"} || '', $prefix));
 }
 $SHEET->param(schoolMagicData => \@schoolmagics);
 if(@schoolmagics || $pc{schoolMagicNote}){ $SHEET->param(schoolMagicView => 1); }
+
+sub buildSchoolMagicData {
+  my ($class, $prefix) = @_;
+  my %data;
+
+  my $icon = '';
+  if($pc{"${prefix}ActionTypePassive"}){ $icon .= '<i class="s-icon passive"><span class="raw">[常]</span></i>' }
+  if($pc{"${prefix}ActionTypeMajor"}  ){ $icon .= '<i class="s-icon major"><span class="raw">[主]</span></i>' }
+  if($pc{"${prefix}ActionTypeMinor"}  ){ $icon .= '<i class="s-icon minor"><span class="raw">[補]</span></i>' }
+  if($pc{"${prefix}ActionTypeSetup"}  ){ $icon .= '<i class="s-icon setup"><span class="raw">[準]</span></i>' }
+
+  my $name = $pc{"${prefix}Name"};
+  my $divine_mark;
+  ($divine_mark, $name) = extractDivineMark($name) if !$class || $class eq '神聖魔法';
+  my $alias;
+  if($name =~ s/\s?[－―‐–—─\-](.+?)[－―‐–—─\-]$//){ $alias = "－$1－" }
+
+  my @name_notes;
+  push(@name_notes, '小魔法') if $pc{"${prefix}Minor"};
+  push(@name_notes, 'マギスフィア:'.$pc{"${prefix}Magisphere"})
+    if $class =~ /魔動機術/ && $pc{"${prefix}Magisphere"};
+
+  %data = (
+    CLASS         => $class || '未設定',
+    NAME          => renderCharacterName($name),
+    ALIAS         => $alias,
+    DIVINE_MARK   => $divine_mark,
+    ICON          => $icon,
+    LEVEL         => $pc{"${prefix}Level"} // $pc{"${prefix}Lv"},
+    LEVEL_LABEL   => ($class =~ /(?:属性|特殊)妖精魔法|秘奥魔法/) ? 'ランク' : '習得レベル',
+    ACQUIRE_COST  => $pc{"${prefix}AcquireCost"},
+    NAME_NOTES    => join('／', @name_notes),
+    COST          => $pc{"${prefix}Cost"},
+    TARGET        => textMagic($pc{"${prefix}Target"}),
+    RANGE         => $pc{"${prefix}Range"},
+    FORM          => $pc{"${prefix}Form"},
+    DURATION      => textMagic($pc{"${prefix}Duration"}),
+    TYPE          => $pc{"${prefix}Type"},
+    PREMISE       => $pc{"${prefix}Premise"},
+    CONDITION     => $pc{"${prefix}Condition"},
+    APPLY_PART    => $pc{"${prefix}ApplyPart"},
+    RANK          => $pc{"${prefix}Rank"},
+    COMMAND_COST  => $pc{"${prefix}CommandCost"} ? $pc{"${prefix}CommandCost"}.'消費' : 'なし',
+    COMMAND_CHARGE=> $pc{"${prefix}CommandCharge"} ? '＋'.$pc{"${prefix}CommandCharge"} : 'なし',
+    RESIST        => $pc{"${prefix}Resist"},
+    ELEMENT       => $pc{"${prefix}Element"},
+    SUMMARY       => $pc{"${prefix}Summary"},
+    EFFECT        => $pc{"${prefix}Effect"},
+    head_EFFECT   => $pc{"head_${prefix}Effect"},
+  );
+  $data{EFFECT} =~ s#<h2>(.+?)</h2>#</dd><dt><span class="center">$1</span></dt><dd class="box">#gi;
+
+  if($class eq '練技'){
+    $data{CLASS_EN} = 'enhance';
+    schoolMagicViewOn(\%data, 'Duration');
+  }
+  elsif($class eq '呪歌'){
+    $data{CLASS_EN} = 'song';
+    $data{SONG_SING} = $pc{"${prefix}SongSing"} ? '必要' : 'なし';
+    $data{SONG_PET} = join('、', grep $_,
+      ($pc{"${prefix}SongPetBird"} ? '小鳥' : undef),
+      ($pc{"${prefix}SongPetFrog"} ? '蛙'   : undef),
+      ($pc{"${prefix}SongPetBug"}  ? '虫'   : undef),
+    );
+    $data{CONDITION}       = textSongPoint($data{CONDITION});
+    $data{SONG_BASE_POINT} = textSongPoint($pc{"${prefix}SongBasePoint"});
+    $data{SONG_SET_POINT}  = textSongPoint($pc{"${prefix}SongSetPoint"});
+    $data{SONG_ADD_POINT}  = textSongPoint($pc{"${prefix}SongAddPoint"});
+    schoolMagicViewOn(\%data, 'Song','Condition','Resist','Element');
+  }
+  elsif($class eq '終律'){
+    $data{CLASS_EN} = 'finale';
+    $data{COST} = textSongPoint($data{COST});
+    schoolMagicViewOn(\%data, 'Cost','Resist','Element');
+  }
+  elsif($class eq '騎芸'){
+    $data{CLASS_EN} = 'riding';
+    $data{PREMISE} ||= 'なし';
+    $data{TYPE} = join('、', grep $_,
+      ($pc{"${prefix}MountTypeAnimal"}  ? '動物'   : undef),
+      ($pc{"${prefix}MountTypeCryptid"} ? '幻獣'   : undef),
+      ($pc{"${prefix}MountTypeMachine"} ? '魔動機' : undef),
+    );
+    schoolMagicViewOn(\%data, 'Premise','Type','Part');
+  }
+  elsif($class eq '賦術'){
+    schoolMagicViewOn(\%data, 'Cost','Target','Range','Duration','Resist');
+  }
+  elsif($class eq '相域'){
+    $data{CLASS_EN} = 'geomancy';
+    schoolMagicViewOn(\%data, 'Cost','Duration','Element');
+  }
+  elsif($class eq '鼓咆'){
+    $data{CLASS_EN} = 'command';
+    $data{TYPE_DT} = '系統';
+    schoolMagicViewOn(\%data, 'Type','Rank','CommandCost','CommandCharge');
+  }
+  elsif($class eq '陣率'){
+    $data{CLASS_EN} = 'lead';
+    schoolMagicViewOn(\%data, 'Premise','Condition','CommandCost');
+  }
+  elsif($class eq '占瞳'){
+    $data{CLASS_EN} = 'divination';
+    $data{TYPE_DT} = 'タイプなど';
+    schoolMagicViewOn(\%data, 'Type','Target','Range','Duration');
+  }
+  elsif($class eq '魔装'){
+    $data{CLASS_EN} = 'potential';
+    $data{APPLY_HUMAN_FORM} =
+      $pc{"${prefix}ApplyHumanForm"} eq 'available'   ? '有効' :
+      $pc{"${prefix}ApplyHumanForm"} eq 'unavailable' ? '無効' : '―';
+    schoolMagicViewOn(\%data, 'Premise','Part','HumanForm');
+  }
+  elsif($class eq '操気'){
+    $data{CLASS_EN} = 'psychokinesis';
+    if($pc{"${prefix}ActionTypePassive"}){ schoolMagicViewOn(\%data, 'Cost','Premise') }
+    else { schoolMagicViewOn(\%data, 'Cost','Premise','Target','Range','Duration','Resist') }
+  }
+  elsif($class eq '呪印'){
+    $data{CLASS_EN} = 'seal';
+    schoolMagicViewOn(\%data, 'Premise','Type');
+  }
+  elsif($class eq '貴格'){
+    $data{CLASS_EN} = 'dignity';
+    schoolMagicViewOn(\%data, 'Premise','Type','Target');
+  }
+  else {
+    schoolMagicViewOn(\%data, 'Cost','Target','Range','Duration','Resist',
+      ($pc{"${prefix}Element"} ? 'Element' : undef));
+  }
+  return \%data;
+}
+
+sub schoolMagicViewOn {
+  my ($data, @names) = @_;
+  foreach my $name (grep defined, @names){ $data->{"${name}On"} = 1; }
+}
 
 ### 特殊能力 --------------------------------------------------
 if ($pc{category} eq 'skill') {
