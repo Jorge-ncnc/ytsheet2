@@ -12,14 +12,10 @@
 /* // Body
 ---------------------------------------------------------------------------------------------------- */
 article, .color-set {
-  --item-head-bg-color: color-mix(
-    in hsl,
-    #fff 70%,
-    hsl(
-      var(--box-head-bg-color-h, 225),
-      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
-      var(--box-head-bg-color-l, 65%)
-    )
+  --item-head-bg-color: hsl(
+    var(--box-head-bg-color-h, 225),
+    calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+    97%
   );
   --s-icon-color: hsl(
     var(--box-head-bg-color-h, 0),
