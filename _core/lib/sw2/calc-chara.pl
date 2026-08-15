@@ -474,7 +474,7 @@ sub dataCalc {
   $pc{mndResistTotal}  = $pc{mndResistBase} + $pc{mndResistAddTotal};
   ## ＨＰＭＰ：装飾品
   foreach my $type ('Head', 'Ear', 'Face', 'Neck', 'Back', 'HandR', 'HandL', 'Waist', 'Leg', 'Other', 'Other2','Other3','Other4') {
-    foreach my $add ('','_','__'){
+    foreach my $add (accessorySuffixes()){
       $pc{hpAccessory} = 2 if $pc{"accessory$type$add".'Own'} eq 'HP';
       $pc{mpAccessory} = 2 if $pc{"accessory$type$add".'Own'} eq 'MP';
     }
@@ -758,7 +758,7 @@ sub dataCalc {
         $pc{"part${_}MpTotal" } = $pc{mpTotal}-$pc{sttAddF}-$pc{sttEquipF}-$pc{mpAdd}-$pc{mpAccessory} +$pc{sttPartF};
         my $hpAccessory = 0;
         my $mpAccessory = 0;
-        foreach my $add ('','_','__'){
+        foreach my $add (accessorySuffixes()){
           if($pc{"accessoryEar$add".'Own'} eq 'HP'){ $hpAccessory =2; }
           if($pc{"accessoryEar$add".'Own'} eq 'MP'){ $mpAccessory =2; }
         }
