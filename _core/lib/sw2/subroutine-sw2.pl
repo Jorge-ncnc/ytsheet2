@@ -758,6 +758,11 @@ sub upgradeArtsData {
   $ver =~ s/^([0-9]+)\.([0-9]+)\.([0-9]+)$/$1.$2$3/;
   delete $pc{updateMessage};
 
+  foreach my $num (1..($pc{schoolMagicNum} || 0)){
+    $pc{"schoolMagic${num}Level"} = $pc{"schoolMagic${num}Lv"}
+      if !defined $pc{"schoolMagic${num}Level"} && defined $pc{"schoolMagic${num}Lv"};
+  }
+
   if($ver < 1.20000){
     foreach my $num (1..$pc{schoolArtsNum}){
       $pc{"schoolArts${num}Type"} = $pc{"schoolArts${num}Base"};

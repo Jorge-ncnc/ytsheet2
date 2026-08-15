@@ -16,6 +16,14 @@ sub loadItemData {
   );
 }
 
+sub loadMonsterData {
+  return importSheetData(
+    shift,
+    softError => 1,
+    dataDir => $set::lib_type{m}{dataDir},
+  );
+}
+
 ### キャラクター保管所 --------------------------------------------------
 sub convertHokanjoToYtsheet {
   my %in = %{$_[0]};
