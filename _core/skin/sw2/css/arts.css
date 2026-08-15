@@ -15,13 +15,13 @@ article,
 .color-set {
   --arts-name-bg-color: hsl(
     var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 82%
+    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 86%
   );
   --arts-name-color: #111;
   --arts-head-bg-color: hsl(
     var(--box-head-bg-color-h, 225),
     calc( var(--box-head-bg-color-s,  9%) * 0.9 ),
-    95%
+    97%
   );
   --arts-section-bg-color: hsl(
     var(--box-head-bg-color-h, 0),
