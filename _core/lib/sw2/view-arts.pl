@@ -478,7 +478,7 @@ sub buildSchoolMagicData {
     if $class =~ /魔動機術/ && $pc{"${prefix}Magisphere"};
 
   %data = (
-    CLASS         => $class || '未設定',
+    CLASS         => $class,
     NAME          => renderCharacterName($name),
     ALIAS         => $alias,
     DIVINE_MARK   => $divine_mark,
