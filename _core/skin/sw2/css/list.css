@@ -21,17 +21,19 @@ header nav {
 }
 main nav {
   & a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4em;
     position: relative;
     overflow: clip;
-    padding-left: 3em;
+    padding-inline: .8em;
     &::before {
       content: "";
       display: block;
-      position: absolute;
-      top: .4em;
-      left: .5em;
-      width : 2.2em;
-      height: 2.2em;
+      flex: 0 0 1em;
+      width : 1em;
+      height: 1em;
       mask-size: 100%;
       mask-repeat: no-repeat;
     }
@@ -42,15 +44,9 @@ main nav {
     .arts    &::before { mask-image: url(../img/icon-scroll.png); }
     @media screen and (width <= 735px){
       width: 9em;
-      padding: 1em 0 .5em;
+      padding: .5em .8em;
       font-size: 1rem;
       text-align: center;
-      &::before {
-        position: static;
-        margin: auto;
-        width : 3rem;
-        height: 3rem;
-      }
     }
   }
 }
@@ -333,7 +329,7 @@ main nav {
   margin-bottom:.5em;
   align-content: center;
   text-align: center;
-  background: var(--h2-color);
+  background: var(--muted-h2-color);
   border-radius: 10px;
   font-size: 1.6rem;
   & small {
@@ -355,7 +351,7 @@ main nav {
 }
 #making-posts .post h3 {
   padding: 0.2em 0.3em;
-  background: linear-gradient(to bottom, var(--h3-color), transparent);
+  background: linear-gradient(to bottom, var(--muted-h3-color), transparent);
 }
 #making-posts .post p {
   padding: 0.5em 1.5em
@@ -384,7 +380,7 @@ main nav {
   & th {
     position: relative;
     padding: 0.2em 0.5em;
-    background: var(--h3-color);
+    background: var(--muted-h3-color);
     text-align: left;
     & a.to-blanksheet {
       display: inline-block;
@@ -407,7 +403,7 @@ main nav {
 #making-posts .post time {
   display: block;
   padding: 2px .5em;
-  background: var(--h2-color);
+  background: var(--muted-h2-color);
   text-align: right;
 }
 #making-posts .navigation {

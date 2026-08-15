@@ -15,15 +15,36 @@ article,
 .color-set {
   --arts-name-bg-color: hsl(
     var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 20%
+    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 90%
   );
-  --arts-head-bg-color: hsla(
+  --arts-name-color: #111;
+  --arts-head-bg-color: hsl(
     var(--box-head-bg-color-h, 225),
     calc( var(--box-head-bg-color-s,  9%) * 0.9 ),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.4)
+    90%
   );
-  .night & {}
+  --arts-section-bg-color: hsl(
+    var(--box-head-bg-color-h, 0),
+    calc( var(--box-head-bg-color-s, 0%) * 0.15 ), 82%
+  );
+  --arts-section-color: #111;
+  --arts-section-text-shadow: none;
+  .night & {
+    --arts-name-bg-color: hsl(
+      var(--box-head-bg-color-h, 0),
+      calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 20%
+    );
+    --arts-name-color: #fff;
+    --arts-head-bg-color: hsla(
+      var(--box-head-bg-color-h, 225),
+      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+      var(--box-head-bg-color-l, 65%),
+      var(--box-head-bg-color-a, 0.4)
+    );
+    --arts-section-bg-color: var(--box-outside-border-color);
+    --arts-section-color: #fff;
+    --arts-section-text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 1px #000;
+  }
 }
 /* // Layout
 ---------------------------------------------------------------------------------------------------- */
@@ -90,9 +111,9 @@ article {
   padding: .4em .5em .3em;
   border-radius: 5px 5px 0 0;
   line-height: 1;
-  background: var(--box-outside-border-color);
-  color: #fff;
-  text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 1px #000;
+  background: var(--arts-section-bg-color);
+  color: var(--arts-section-color);
+  text-shadow: var(--arts-section-text-shadow);
   font-weight: bold;
   font-size: 100%;
 }
@@ -441,7 +462,7 @@ article {
 .data-magic > h3.name {
   border-width: 1px 0 0 1px;
   background: var(--arts-name-bg-color);
-  color: #fff;
+  color: var(--arts-name-color);
   font-size: 130%;
   word-break: keep-all;
   text-wrap: balance;
@@ -456,7 +477,7 @@ article {
 .data-magic dl.name {
   & dt {
     background: var(--arts-name-bg-color);
-    color: #fff;
+    color: var(--arts-name-color);
     font-size: 150%;
     word-break: auto-phrase;
   }
@@ -466,7 +487,7 @@ article {
     align-items: center;
     flex-wrap: wrap;
     background: var(--arts-name-bg-color);
-    color: #fff;
+    color: var(--arts-name-color);
     font-size: 150%;
     :is(#god,#school) & {
       font-size: 130%;
@@ -488,7 +509,7 @@ article {
 }
 .data-magic dl.name dd .s-icon::before,
 .data-magic > h3 .s-icon::before {
-  color: #fff;
+  color: var(--arts-name-color);
 }
 .data-magic.data-arts > dl:not(.summary,.effect) dd {
   display: flex;
@@ -703,7 +724,7 @@ a.failed::before {
     font-size: 150%;
     font-weight: bold;
     background-color: var(--arts-name-bg-color);
-    color: #fff;
+    color: var(--arts-name-color);
     padding: 0.2em 0.5em;
   }
 

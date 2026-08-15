@@ -4,7 +4,7 @@
   --theme-main-hue  : 240;
   --theme-sub-hue   : 205;
   --theme-accent-hue: 185;
-  --header-chroma: 0.09;
+  --header-chroma: 0.04;
 }
 @media screen {
   .night {

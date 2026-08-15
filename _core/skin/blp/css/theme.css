@@ -5,7 +5,7 @@
   --theme-sub-hue   : 290;
   --theme-accent-hue: 26;
   --theme-menu-hue: var(--theme-main-hue);
-  --header-chroma: 0.12;
+  --header-chroma: 0.05;
   --menu-icon-current-color   : #ffffff;
   --menu-icon-current-bg-color: #d02530;
   --icon--current-color: #d02530;

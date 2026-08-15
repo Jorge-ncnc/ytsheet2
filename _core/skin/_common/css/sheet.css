@@ -23,23 +23,32 @@
   --box-h-gap: 10px;
 }
 article, .color-set {
-  --box-head-bg-color: hsla(
-    var(--box-head-bg-color-h, 225),
-    var(--box-head-bg-color-s,  9%),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.4)
+  --box-head-bg-color: color-mix(
+    in hsl,
+    #fff 70%,
+    hsl(
+      var(--box-head-bg-color-h, 225),
+      var(--box-head-bg-color-s, 9%),
+      var(--box-head-bg-color-l, 65%)
+    )
   );
-  --box-head-bg-color-pale: hsla(
-    var(--box-head-bg-color-h, 225),
-    var(--box-head-bg-color-s,  9%),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.25)
+  --box-head-bg-color-pale: color-mix(
+    in hsl,
+    #fff 82%,
+    hsl(
+      var(--box-head-bg-color-h, 225),
+      var(--box-head-bg-color-s, 9%),
+      var(--box-head-bg-color-l, 65%)
+    )
   );
-  --box-head-bg-color-faint: hsla(
-    var(--box-head-bg-color-h, 225),
-    var(--box-head-bg-color-s,  9%),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.13)
+  --box-head-bg-color-faint: color-mix(
+    in hsl,
+    #fff 90%,
+    hsl(
+      var(--box-head-bg-color-h, 225),
+      var(--box-head-bg-color-s, 9%),
+      var(--box-head-bg-color-l, 65%)
+    )
   );
   --box-base-bg-color: hsla(
     var(--box-base-bg-color-h, 235),
@@ -47,29 +56,55 @@ article, .color-set {
     var(--box-base-bg-color-l, 100%),
     var(--box-base-bg-color-a, 0.5)
   );
-  --box-head-bg-color-dark: hsla(
-    var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 50%, 0.4
+  --box-head-bg-color-dark: color-mix(
+    in hsl,
+    #fff 65%,
+    hsl(
+      var(--box-head-bg-color-h, 0),
+      calc( var(--box-head-bg-color-s, 0%) * 0.5 ), 50%
+    )
   );
   --box-outside-border-color: hsl(
     var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.15 ), 60%
+    calc( var(--box-head-bg-color-s,   0%) * 0.15 ), 75%
   );
   --box-inside-border-color: hsl(
     var(--box-base-bg-color-h, 0),
-    calc( var(--box-base-bg-color-s,   0%) * 0.3 ), 65%
+    calc( var(--box-base-bg-color-s,   0%) * 0.3 ), 82%
   );
   --box-emphasis-border-color: hsla(
     var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.4 ), 50%, 0.5
+    calc( var(--box-head-bg-color-s,   0%) * 0.4 ), 70%, 0.5
   );
-  --box-even-rows-bg-color: rgba(127,127,127,0.15);
+  --box-even-rows-bg-color: rgba(127,127,127,0.08);
   --box-input-border-color: hsl(
     var(--box-base-bg-color-h, 0),
-    calc( var(--box-base-bg-color-s,   0%) * 0.3 ), 75%
+    calc( var(--box-base-bg-color-s,   0%) * 0.3 ), 85%
   );
   @media screen {
     .night & {
+      --box-head-bg-color: hsla(
+        var(--box-head-bg-color-h, 225),
+        var(--box-head-bg-color-s, 9%),
+        var(--box-head-bg-color-l, 65%),
+        var(--box-head-bg-color-a, 0.4)
+      );
+      --box-head-bg-color-pale: hsla(
+        var(--box-head-bg-color-h, 225),
+        var(--box-head-bg-color-s, 9%),
+        var(--box-head-bg-color-l, 65%),
+        var(--box-head-bg-color-a, 0.25)
+      );
+      --box-head-bg-color-faint: hsla(
+        var(--box-head-bg-color-h, 225),
+        var(--box-head-bg-color-s, 9%),
+        var(--box-head-bg-color-l, 65%),
+        var(--box-head-bg-color-a, 0.13)
+      );
+      --box-head-bg-color-dark: hsla(
+        var(--box-head-bg-color-h, 0),
+        calc( var(--box-head-bg-color-s, 0%) * 0.5 ), 50%, 0.4
+      );
       --box-base-bg-color: hsla(
         var(--box-base-bg-color-h,   0),
         var(--box-base-bg-color-s,  0%),
@@ -88,6 +123,11 @@ article, .color-set {
         var(--box-base-bg-color-h, 0),
         calc( var(--box-base-bg-color-s,   0%) * 0.3 ), 15%
       );
+      --box-emphasis-border-color: hsla(
+        var(--box-head-bg-color-h, 0),
+        calc( var(--box-head-bg-color-s, 0%) * 0.4 ), 50%, 0.5
+      );
+      --box-even-rows-bg-color: rgba(127,127,127,0.15);
     }
   }
 }
@@ -164,21 +204,6 @@ header nav {
   text-overflow: ellipsis;
   
   cursor: pointer;
-  
-  background-color: hsla(
-    var(--box-head-bg-color-h),
-    calc((var(--box-head-bg-color-s,  9%) + 9%) / 2),
-    65%
-  );
-  @media screen {
-    .night & {
-      background-color: hsla(
-        var(--box-head-bg-color-h),
-        calc((var(--box-head-bg-color-s,  9%) + 9%) / 2),
-        35%
-      );
-    }
-  }
 }
 @media screen and (width >= 1400px){
   body.wide {
@@ -508,7 +533,7 @@ details:not([open]).box > summary:hover {
     font-weight: normal;
     font-size: 1.2em;
     line-height: 1;
-    color: var(--icon--current-color);
+    color: var(--muted-icon-current-color);
   }
 }
 .box.chat-palette .chat-palette-menu {
@@ -835,8 +860,8 @@ header nav ul {
 :has(#downloadlist.show) a[onclick^="downloadListOn"],
 :has(.chat-palette.show) a[onclick^="chatPaletteOn"] {
   .icon {
-    background: var(--menu-icon-current-bg-color);
-    color: var(--menu-icon-current-color);
+    background: var(--muted-menu-icon-current-bg-color);
+    color: var(--muted-menu-icon-current-color);
   }
 }
 
@@ -1250,7 +1275,7 @@ aside:is(#loglist,#downloadlist) {
     font-weight: normal;
     font-size: 1.2em;
     line-height: 1;
-    color: var(--icon--current-color);
+    color: var(--muted-icon-current-color);
   }
   &#loglist      h2::before { content: "\e889" }
   &#downloadlist h2::before { content: "\ebbe" }
