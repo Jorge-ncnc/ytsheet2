@@ -41,7 +41,6 @@ foreach(@data::class_names){
 @craft_classes = deduplicate(@craft_classes); #重複削除
 push(@magic_classes, @craft_classes);
 @magic_classes = deduplicate(@magic_classes); #重複削除
-my @school_magic_classes = grep { $_ !~ /^(?:LABEL=|GROUPCLOSE$)/ } @magic_classes;
 ### データ読み込み ###################################################################################
 my ($data, $file, $message) = loadSheetData();
 our %pc = %{ $data };
@@ -79,10 +78,17 @@ setDefaultColors(\%pc);
 ## その他
 $pc{schoolArtsNum} ||= 3;
 $pc{schoolMagicNum} ||= 1;
+# 空欄と個別設定を保存データ上で区別する
+$pc{schoolMagicClass} = '__none__'
+  if !defined $pc{schoolMagicClass} || $pc{schoolMagicClass} eq '';
 foreach my $num (1..$pc{schoolMagicNum}){
   $pc{"schoolMagic${num}Level"} = $pc{"schoolMagic${num}Lv"}
     if !defined $pc{"schoolMagic${num}Level"} && defined $pc{"schoolMagic${num}Lv"};
 }
+my $school_magic_class_input = selectInput(
+  'schoolMagicClass', 'checkSchoolMagicClassAll(this)',
+  'DEF=__none__=>', '__individual__=>個別に設定', @magic_classes
+);
 
 ### 折り畳み判断 --------------------------------------------------
 my %open;
@@ -353,6 +359,9 @@ print <<"HTML";
       </details>
       <details class="box" id="school-magic-section" $open{schoolMagic}>
         <summary class="in-toc">流派秘伝魔法／練技・呪歌など</summary>
+        <div class="input-data">
+          <dl class="class"><dt>系統<dd>$school_magic_class_input</dl>
+        </div>
         <textarea name="schoolMagicNote" placeholder="流派秘伝魔法全体の注釈（あれば）">$pc{schoolMagicNote}</textarea>
         <div id="school-magic-list">
           @{[ renderTemplateLoop(
@@ -473,7 +482,7 @@ sub renderSchoolMagicRow ($num) {
         <span class="action-major">@{[ checkbox "${prefix}ActionTypeMajor",'主動作' ]}</span>
         @{[ checkbox "${prefix}ActionTypeMinor",'補助動作' ]}@{[ checkbox "${prefix}ActionTypeSetup",'戦闘準備' ]}
       </dl>
-      <dl class="class"><dt>系統<dd>@{[ selectInput "${prefix}Class","checkSchoolMagicClass(this)",@school_magic_classes ]}</dl>
+      <dl class="class"><dt>系統<dd>@{[ selectInput "${prefix}Class","checkSchoolMagicClass(this)",@magic_classes ]}</dl>
       <dl class="acquire-cost"><dt>必要名誉点<dd>@{[ input "${prefix}AcquireCost" ]}</dl>
       @{[ renderSchoolMagicInputs($prefix) ]}
     </div>
