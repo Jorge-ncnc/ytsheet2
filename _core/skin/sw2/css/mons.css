@@ -30,7 +30,7 @@ article, .color-set {
       );
       --monster-level-color: #fff;
       --monster-level-gradient: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
-      --monster-level-text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+      --monster-level-text-shadow: 0 0 max(1px, .07em) #000, 0 0 max(1px, .07em) #000, 0 0 max(1px, .07em) #000;
       --monster-head-bg-color: hsla(
         var(--box-head-bg-color-h, 225),
         calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
