@@ -3,10 +3,8 @@
 :root{
   --theme-main-hue  : 90;
   --theme-sub-hue   : 90;
-  --theme-accent-hue: 30;
+  --theme-accent-hue: 90;
   --theme-menu-hue: var(--theme-main-hue);
-  --menu-icon-current-color: oklch(20% 0.8 30);
-  --icon--current-color: var(--menu-icon-current-color);
 }
 @media screen {
   .night {

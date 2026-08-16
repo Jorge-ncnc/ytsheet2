@@ -782,7 +782,7 @@ dl#level {
   }
   .ft-earth { background: hsla( 45,100%, 50%,0.3); }
   .ft-water { background: hsla(210,100%, 50%,0.3); }
-  .ft-fire  { background: hsla(  0,100%, 50%,0.3); }
+  .ft-fire  { background: hsla( 30,100%, 50%,0.3); }
   .ft-wind  { background: hsla(120,100%, 50%,0.3); }
   .ft-light { background: hsla(  0,100%,100%,0.3); }
   .ft-dark  { background: hsla(  0,100%,  0%,0.3); }

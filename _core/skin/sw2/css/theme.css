@@ -6,9 +6,6 @@
   --theme-accent-hue: 270;
   --h2-color: oklch(88% 0.04 var(--theme-sub-hue));
   --h3-color: oklch(92% 0.03 var(--theme-sub-hue));
-  --menu-icon-current-color: #d02530;
-  --icon--current-color: var(--menu-icon-current-color);
-
   &:has([data-system="sw2.0"]) {
     --header-chroma: 0.03;
     --menu-icon-bg-color: oklch(80% 0.02 var(--theme-menu-hue));

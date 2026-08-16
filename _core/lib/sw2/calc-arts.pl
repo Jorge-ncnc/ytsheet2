@@ -48,7 +48,7 @@ sub dataCalc {
   convertNewlinesToBrTag(\%pc,
     qw/magicEffect magicDescription
     godSymbol godDeity godNote godQnA
-    schoolNote schoolItemNote schoolArtsNote schoolMagicNote schoolQnA
+    schoolNote schoolItemNote schoolMonsterNote schoolArtsNote schoolMagicNote schoolQnA
     skillRankB_effect skillRankA_effect skillRankS_effect skillRankSS_effect
     /,
     ( map { "godMagic${_}Effect"    } 2,4,7,10,13 ),

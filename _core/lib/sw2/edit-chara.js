@@ -1,5 +1,6 @@
 "use strict";
 const gameSystem = SET.gameSystem;
+const accessorySuffixes = ['','_','__','___','____','_____','______'];
 let modeZero;
 
 const expTable = {
@@ -507,26 +508,14 @@ function checkRace(){
     if(level >= 16){ raceAbilityMods['トロールの体躯'].def += 2 }
   }
   if(raceAbilities.includes('見えざる手')){
-    document.getElementById("accessory-rowOther2").style.display = '';
-    document.getElementById("accessory-rowOther3").style.display = (level >=  6) ? '' : 'none';
-    document.getElementById("accessory-rowOther4").style.display = (level >= 16) ? '' : 'none';
-    addAccessory('Other2');
-    addAccessory('Other2_');
-    addAccessory('Other3');
-    addAccessory('Other3_');
-    addAccessory('Other4');
-    addAccessory('Other4_');
+    setAccessoryAvailability('Other2', true);
+    setAccessoryAvailability('Other3', level >=  6);
+    setAccessoryAvailability('Other4', level >= 16);
   }
   else {
-    document.getElementById("accessory-rowOther2"  ).style.display = 
-    document.getElementById("accessory-rowOther2_" ).style.display = 
-    document.getElementById("accessory-rowOther2__").style.display = 
-    document.getElementById("accessory-rowOther3"  ).style.display = 
-    document.getElementById("accessory-rowOther3_" ).style.display = 
-    document.getElementById("accessory-rowOther3__").style.display = 
-    document.getElementById("accessory-rowOther4"  ).style.display = 
-    document.getElementById("accessory-rowOther4_" ).style.display = 
-    document.getElementById("accessory-rowOther4__").style.display = 'none';
+    setAccessoryAvailability('Other2', false);
+    setAccessoryAvailability('Other3', false);
+    setAccessoryAvailability('Other4', false);
   }
   document.querySelectorAll('[data-race-ability-only]').forEach(node => {
     if(!SET.races[race] || node.dataset.raceAbilityOnly == raceBase){ node.style.display = '' }
@@ -1327,7 +1316,7 @@ function calcSubStt() {
   subStt.hpAccessory = 0;
   subStt.mpAccessory = 0;
   for (let type of ["Head", "Face",  "Ear", "Neck", "Back", "HandR", "HandL", "Waist", "Leg", "Other", "Other2", "Other3", "Other4"]){
-    for (let add of ['','_','__']){
+    for (let add of accessorySuffixes){
       const name = type + add;
       if(form["accessory"+name+"Own"].value === "HP"){ subStt.hpAccessory = 2 }
       if(form["accessory"+name+"Own"].value === "MP"){ subStt.mpAccessory = 2 }
@@ -1673,7 +1662,7 @@ function calcParts(){
       else {
         let hpAccessory = 0;
         let mpAccessory = 0;
-        for (let add of ['','_','__']){
+        for (let add of accessorySuffixes){
           if(form["accessoryEar"+add+"Own"].value === "HP"){ hpAccessory = 2 }
           if(form["accessoryEar"+add+"Own"].value === "MP"){ mpAccessory = 2 }
         }
@@ -2564,12 +2553,27 @@ function delEffectBox(){
 setSortable('effect','#area-effects','div');
 
 // 装飾品欄 ----------------------------------------
-function addAccessory(name){
-  if(form[`accessory${name}Add`].checked) {
-    document.querySelector(`#accessories [data-type="${name}_"]`).style.display = '';
+function setAccessoryAvailability(name, available){
+  document.querySelector(`#accessories [data-type="${name}"]`).style.display = available ? '' : 'none';
+  if(available){
+    addAccessory(name);
+    return;
   }
-  else {
-    document.querySelector(`#accessories [data-type="${name}_"]`).style.display = 'none';
+  for(let depth = 1; depth < accessorySuffixes.length; depth++){
+    document.querySelector(`#accessories [data-type="${name}${accessorySuffixes[depth]}"]`).style.display = 'none';
+  }
+}
+function addAccessory(name){
+  const base = name.replace(/_+$/, '');
+  const currentDepth = name.length - base.length;
+  let visible = form[`accessory${name}Add`].checked;
+
+  for(let depth = currentDepth + 1; depth < accessorySuffixes.length; depth++){
+    const nextName = base + accessorySuffixes[depth];
+    document.querySelector(`#accessories [data-type="${nextName}"]`).style.display = visible ? '' : 'none';
+    if(depth < accessorySuffixes.length - 1){
+      visible = visible && form[`accessory${nextName}Add`].checked;
+    }
   }
 
   calcDefense(); // 装飾品由来の回避力・防護点の再計算

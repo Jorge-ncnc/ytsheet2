@@ -105,7 +105,7 @@ span[data-gender] {
     font-size: 1.2em;
   }
   &[data-gender=male]   { background-color: #07f3; }
-  &[data-gender=female] { background-color: #f003; }
+  &[data-gender=female] { background-color: #f5c4; }
   &[data-gender=cross]  { background-color: #70f3; }
   &[data-gender=none]   { background-color: #7773; }
   &[data-gender=unknown]{ background-color: #7773; }
@@ -132,7 +132,7 @@ span[data-gender] {
   border-width: 1px;
   border-style: solid;
   border-radius: 50%;
-  background-color: var(--h4-color);
+  background-color: var(--muted-h4-color);
   cursor: pointer;
   &::before {
     content: "\e8b6";
@@ -230,7 +230,7 @@ form#form-search {
   padding: 0 .5em;
   line-height: 1.6rem;
   background-color: var(--bg-color);
-  background-image: linear-gradient(var(--h2-color));
+  background-image: linear-gradient(var(--muted-h2-color));
   > dt::after {
     content: ":";
   }
@@ -281,22 +281,21 @@ main nav ul li {
     background: var(--nav-shadow);
   }
   & a {
-    padding: .7em .8em;
+    padding: .45em .8em;
     border-width: 1px;
     border-style: solid;
     border-radius: .5em .5em 0 0;
     background: var(--nav-shadow);
-    background-color: var(--h4-color);
-    .night & { background-color: oklch(30% 0.02 var(--theme-sub-hue)); }
+    background-color: var(--muted-h4-color);
     color: var(--text-color);
     font-weight: bold;
     text-decoration: none;
     &::before {
-      background-color: var(--icon--color);
+      background-color: var(--muted-icon-color);
     }
     &:hover::before,
     .current &::before {
-      background-color: var(--icon--current-color);
+      background-color: var(--muted-icon-current-color);
     }
   }
   .night &:not(.current) a {
@@ -304,10 +303,10 @@ main nav ul li {
   }
   &.current a {
     border-bottom-style: hidden;
-    background: linear-gradient(to bottom, oklch(97% 0.03 var(--theme-sub-hue)), transparent);
+    background: linear-gradient(to bottom, var(--muted-h3-color), transparent);
   }
   .night &.current a {
-    background: linear-gradient(to bottom, oklch(35% 0.03 var(--theme-sub-hue)), transparent);
+    background: linear-gradient(to bottom, var(--muted-h3-color), transparent);
   }
   & a:hover {
     background: var(--bg-color);
@@ -325,7 +324,7 @@ main nav ul li {
       width: 2px;
     }
     & ul li a {
-      padding: .8em .8em;
+      padding: .5em .8em;
     }
   }
 }
@@ -336,13 +335,16 @@ main nav ul li {
   margin: 1.5rem 0 5rem;
   padding: 0;
   font-family: var(--font-proportional);
+  & a[href] {
+    text-decoration: none;
+  }
 }
 .list h2 {
   height: 4rem;
   padding: 0 .8em;
   margin-bottom:.5em;
   align-content: center;
-  background-color: var(--h2-color);
+  background-color: var(--muted-h2-color);
   border-radius: 10px;
   font-size: 1.6rem;
   & small {
@@ -395,7 +397,7 @@ main nav ul li {
       padding: 0;
       line-height: 1.2;
       border-radius: 5px;
-      background: var(--h3-color);
+      background: var(--muted-h3-color);
       white-space: nowrap;
     }
     > a {
@@ -445,18 +447,9 @@ main nav ul li {
 
     border-radius: 8px;
 
-    &,
-    & span {
-      text-decoration: 2px underline var(--a-line-color);
-      text-underline-offset: .3rem;
-    }
     &:hover {
       color: var(--text-color);
       background: var(--row-bg-hover);
-      &,
-      & span {
-        text-decoration: none;
-      }
     }
 
     > span {

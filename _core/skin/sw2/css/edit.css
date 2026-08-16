@@ -1989,6 +1989,9 @@ body[data-sheet-type="arts"] {
   div.input-data dl dd input#schoolItemUrl {
     max-width: 24em;
   }
+  div.input-data dl dd input#schoolMonsterUrl {
+    max-width: 24em;
+  }
   textarea {
     height: 6em;
     padding: 2px;
@@ -2021,6 +2024,32 @@ body[data-sheet-type="arts"] {
   }
 
   #school-item-list tbody td:nth-child(3) { font-size: 82%; }
+
+  #school-monster-list {
+    width: 100%;
+  }
+  #school-monster-list thead th {
+    &:nth-child(1) { width: 14em; }
+    &:nth-child(2) { width: 10em; }
+    &:nth-child(3) { width: auto; }
+    &:nth-child(4) { width: 1em; }
+  }
+
+  #school-monster-list tbody td:nth-child(3) { font-size: 82%; }
+
+  #school-mount-list {
+    width: 100%;
+  }
+  #school-mount-list thead th {
+    &:nth-child(1) { width: 12em; }
+    &:nth-child(2) { width: 6em; }
+    &:nth-child(3) { width: 5em; }
+    &:nth-child(4) { width: 4em; }
+    &:nth-child(5) { width: 6em; }
+    &:nth-child(6) { width: 7em; }
+    &:nth-child(7) { width: 7em; }
+    &:nth-child(8) { width: 2.5em; }
+  }
 
   #data-skill {
     input[name="skillActionBaseValue"] {
@@ -2112,8 +2141,13 @@ body[data-sheet-type="arts"] {
     }
     #school-item-list thead th:nth-child(3),
     #school-item-list tbody td:nth-child(3) { display: none; }
-    
+
     #school-item-list tbody td { font-size: 82%; }
+
+    #school-monster-list thead th:nth-child(3),
+    #school-monster-list tbody td:nth-child(3) { display: none; }
+
+    #school-monster-list tbody td { font-size: 82%; }
   }
 
   #image {

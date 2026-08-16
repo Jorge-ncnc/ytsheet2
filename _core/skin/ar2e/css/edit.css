@@ -376,10 +376,10 @@ dd.area-tags {
   &.faith   { background-image: linear-gradient(to right,hsla( 80, 70%, 50%,0.2) 1em,transparent 2em) }
   &.general { background-image: linear-gradient(to right,hsla(200,100%, 50%,0.2),transparent) }
   &.geis    { background-image: linear-gradient(to right,hsla(270,100%, 50%,0.2),transparent) }
-  &.add     { background-image: linear-gradient(to right,hsla(  0, 20%, 50%,0.1),transparent) }
-  &.another { background-image: linear-gradient(to right,hsla(  0,100%, 50%,0.2),transparent) }
+  &.add     { background-image: linear-gradient(to right,hsla(310, 20%, 50%,0.1),transparent) }
+  &.another { background-image: linear-gradient(to right,hsla(270,100%, 50%,0.2),transparent) }
   &.power   { background-image: linear-gradient(to right,hsla( 40,100%, 50%,0.2),transparent) }
-  .night &.another { background-image: linear-gradient(to right,hsla(  0,100%, 85%,0.2),transparent) }
+  .night &.another { background-image: linear-gradient(to right,hsla(270,100%, 85%,0.2),transparent) }
 }
 
 @media screen and (width <= 735px){
@@ -726,5 +726,4 @@ dd.area-tags {
   font-size: 85%;
   font-weight: bold;
 }
-
 

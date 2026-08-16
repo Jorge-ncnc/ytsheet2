@@ -8,13 +8,15 @@
 article, .color-set {
   --monster-level-bg-color: hsl(
     var(--box-head-bg-color-h, 0),
-    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 50%
+    calc( var(--box-head-bg-color-s,   0%) * 0.5 ), 90%
   );
-  --monster-head-bg-color: hsla(
+  --monster-level-color: #111;
+  --monster-level-gradient: none;
+  --monster-level-text-shadow: none;
+  --monster-head-bg-color: hsl(
     var(--box-head-bg-color-h, 225),
-    calc( var(--box-head-bg-color-s,  9%) * 0.9 ),
-    var(--box-head-bg-color-l, 65%),
-    var(--box-head-bg-color-a, 0.4)
+    calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+    97%
   );
   --s-icon-color: hsl(
     var(--box-head-bg-color-h, 0),
@@ -22,6 +24,19 @@ article, .color-set {
   );
   @media screen {
     .night & {
+      --monster-level-bg-color: hsl(
+        var(--box-head-bg-color-h, 0),
+        calc( var(--box-head-bg-color-s, 0%) * 0.5 ), 50%
+      );
+      --monster-level-color: #fff;
+      --monster-level-gradient: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
+      --monster-level-text-shadow: 0 0 max(1px, .07em) #000, 0 0 max(1px, .07em) #000, 0 0 max(1px, .07em) #000;
+      --monster-head-bg-color: hsla(
+        var(--box-head-bg-color-h, 225),
+        calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+        var(--box-head-bg-color-l, 65%),
+        var(--box-head-bg-color-a, 0.4)
+      );
       --s-icon-color: hsl(
         var(--box-head-bg-color-h, 0),
         calc( var(--box-head-bg-color-s,   0%) * 0.9 ), 70%
@@ -30,6 +45,18 @@ article, .color-set {
   }
 }
 
+@media screen {
+  html:not(.night) #monster article,
+  html:not(.night) #monster article .color-set {
+    --monster-level-bg-color: #444;
+    --monster-level-color: #fff;
+    --monster-head-bg-color: hsl(
+      var(--box-head-bg-color-h, 225),
+      calc( var(--box-head-bg-color-s, 9%) * 0.9 ),
+      80%
+    );
+  }
+}
 
 /* // Base
 ---------------------------------------------------------------------------------------------------- */
@@ -72,9 +99,9 @@ article {
   justify-content: center;
   width: 2em;
   background-color: var(--monster-level-bg-color);
-  background-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
-  color: #fff;
-  text-shadow: 0 0 .07em #000, 0 0 .07em #000, 0 0 .07em #000;
+  background-image: var(--monster-level-gradient);
+  color: var(--monster-level-color);
+  text-shadow: var(--monster-level-text-shadow);
   text-align: center;
   font-size: 200%;
   font-weight: bold;
@@ -131,8 +158,8 @@ article {
   border-radius: 5px 5px 0 0;
   line-height: 1;
   background: var(--monster-level-bg-color);
-  color: #fff;
-  text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 1px #000;
+  color: var(--monster-level-color);
+  text-shadow: var(--monster-level-text-shadow);
   font-weight: bold;
 }
 
