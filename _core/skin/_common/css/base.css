@@ -754,8 +754,8 @@ header nav ul li {
       text-align: center;
       white-space: nowrap;
       font-size: 1.2rem;
-      -webkit-text-stroke: 3.5px #000;
-      text-stroke: 3.5px #000;
+      -webkit-text-stroke: .3em #000;
+      text-stroke: .3em #000;
       paint-order: stroke;
     }
     .icon:empty + .label {
