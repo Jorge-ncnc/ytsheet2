@@ -74,7 +74,7 @@ article {
   background-color: var(--monster-level-bg-color);
   background-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
   color: #fff;
-  text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000;
+  text-shadow: 0 0 .07em #000, 0 0 .07em #000, 0 0 .07em #000;
   text-align: center;
   font-size: 200%;
   font-weight: bold;
