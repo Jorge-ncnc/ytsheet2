@@ -10,7 +10,7 @@ use open ":utf8";
 ### データ／テンプレート読込 #########################################################################
 (my $pcRef, my $SHEET) = setupViewBase(
   unescapeLinesRe   => qr/(?:Effects?|Description|Note|QnA)$/,
-  unescapeSkipKeys  => [qw/schoolItemList schoolMonsterList/],
+  unescapeSkipKeys  => [qw/schoolItemList schoolMonsterList schoolMagicClass/],
   maskSkipKeys      => ['category'],
   nameSub           => \&setArtsName,
   updateSub => \&upgradeArtsData,
@@ -448,10 +448,14 @@ $SHEET->param(ArtsData => \@arts);
 if(@arts || $pc{schoolArtsNote}){ $SHEET->param(ArtsView => 1); }
 
 my @schoolmagics;
+my $school_magic_class = $pc{schoolMagicClass} // '__none__';
 foreach my $num (1..$pc{schoolMagicNum}){
   my $prefix = "schoolMagic${num}";
   next unless $pc{"${prefix}Name"};
-  push(@schoolmagics, buildSchoolMagicData($pc{"${prefix}Class"} || '', $prefix));
+  my $class = $school_magic_class eq '__individual__' ? ($pc{"${prefix}Class"} // '')
+    : $school_magic_class eq '__none__' ? ''
+    : $school_magic_class;
+  push(@schoolmagics, buildSchoolMagicData($class, $prefix));
 }
 $SHEET->param(schoolMagicData => \@schoolmagics);
 if(@schoolmagics || $pc{schoolMagicNote}){ $SHEET->param(schoolMagicView => 1); }

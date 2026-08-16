@@ -2051,8 +2051,6 @@ body[data-sheet-type="arts"] {
     &:nth-child(8) { width: 2.5em; }
   }
 
-  #school-mount-list tbody td { font-size: 82%; }
-
   #data-skill {
     input[name="skillActionBaseValue"] {
       width: 30em;

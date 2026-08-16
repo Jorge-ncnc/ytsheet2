@@ -348,6 +348,7 @@ function delSchoolMonster(obj, url){
 }
 
 function setupSchoolMagicRows(){
+  setupSchoolMagicClassFreeInput(getSchoolMagicClassAllInput(), checkSchoolMagicClassAll);
   document.querySelectorAll('#school-magic-list > .school-magic-data').forEach(row => {
     setupSchoolMagicRow(row, false);
   });
@@ -360,16 +361,53 @@ function setupSchoolMagicRow(row, initializeDefaults = false){
     console.error('秘伝魔法の入力名を取得できません。');
     return;
   }
-  const classField = row.querySelector(`select[name="${prefix}Class"], select[name="${prefix}ClassSelect"]`);
-  const magic = classField?.value === 'free'
-    ? row.querySelector(`input[name="${prefix}Class"]`)?.value || ''
-    : classField?.value || '';
+  const classInput = row.querySelector('dl.class .select-input');
+  setupSchoolMagicClassFreeInput(classInput, checkSchoolMagicClass);
+
+  const schoolMagicClass = getSchoolMagicClassAllValue();
+  const isIndividual = schoolMagicClass === '__individual__';
+  const magic = isIndividual
+    ? getSchoolMagicClassValue(classInput)
+    : schoolMagicClass === '__none__' ? '' : schoolMagicClass;
   setupMagicInputs(row, magic, prefix, false, initializeDefaults);
+  const classRow = classInput?.closest('dl.class');
+  if(classRow){ classRow.style.display = isIndividual ? '' : 'none'; }
   setupRangeField(row.querySelector(`[name="${prefix}Range"]`));
 }
 
-function checkSchoolMagicClass(select){
-  const row = select?.closest('.school-magic-data');
+function getSchoolMagicClassAllInput(){
+  const select = document.querySelector('select[name="schoolMagicClass"], select[name="schoolMagicClassSelect"]');
+  return select?.closest('.select-input');
+}
+
+function getSchoolMagicClassAllValue(){
+  const input = getSchoolMagicClassAllInput();
+  return input ? getSchoolMagicClassValue(input) : '__individual__';
+}
+
+function getSchoolMagicClassValue(root){
+  const select = root?.querySelector('select');
+  if(!select){ return ''; }
+  return select.value === 'free'
+    ? root.querySelector('input[type="text"]')?.value || ''
+    : select.value || '';
+}
+
+function setupSchoolMagicClassFreeInput(root, callback){
+  const input = root?.querySelector('input[type="text"]');
+  if(!input || input.dataset.schoolMagicClassReady){ return; }
+  input.dataset.schoolMagicClassReady = '1';
+  input.addEventListener('input', () => callback(input));
+}
+
+function checkSchoolMagicClassAll(){
+  document.querySelectorAll('#school-magic-list > .school-magic-data').forEach(row => {
+    setupSchoolMagicRow(row, true);
+  });
+}
+
+function checkSchoolMagicClass(field){
+  const row = field?.closest('.school-magic-data');
   if(row){ setupSchoolMagicRow(row, true); }
 }
 // 秘伝欄 ----------------------------------------

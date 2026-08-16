@@ -781,6 +781,24 @@ sub upgradeArtsData {
   $ver =~ s/^([0-9]+)\.([0-9]+)\.([0-9]+)$/$1.$2$3/;
   delete $pc{updateMessage};
 
+  unless(exists $pc{schoolMagicClass}){
+    # 空の自由入力を旧データとして再判定しない
+    if(($pc{schoolMagicClassSelect} // '') eq 'free'){
+      $pc{schoolMagicClass} = '__none__';
+    }
+    else {
+      my %classes;
+      foreach my $num (1..($pc{schoolMagicNum} || 0)){
+        next unless defined $pc{"schoolMagic${num}Name"} && $pc{"schoolMagic${num}Name"} ne '';
+        $classes{ $pc{"schoolMagic${num}Class"} // '' } = 1;
+      }
+      my @classes = keys %classes;
+      $pc{schoolMagicClass} = @classes > 1 ? '__individual__'
+        : @classes == 1 && $classes[0] ne '' ? $classes[0]
+        : '__none__';
+    }
+  }
+
   foreach my $num (1..($pc{schoolMagicNum} || 0)){
     $pc{"schoolMagic${num}Level"} = $pc{"schoolMagic${num}Lv"}
       if !defined $pc{"schoolMagic${num}Level"} && defined $pc{"schoolMagic${num}Lv"};
