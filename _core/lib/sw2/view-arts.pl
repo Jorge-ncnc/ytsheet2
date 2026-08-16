@@ -10,7 +10,7 @@ use open ":utf8";
 ### データ／テンプレート読込 #########################################################################
 (my $pcRef, my $SHEET) = setupViewBase(
   unescapeLinesRe   => qr/(?:Effects?|Description|Note|QnA)$/,
-  unescapeSkipKeys  => [qw/schoolItemList schoolMonsterList/],
+  unescapeSkipKeys  => [qw/schoolItemList schoolMonsterList schoolMagicClass/],
   maskSkipKeys      => ['category'],
   nameSub           => \&setArtsName,
   updateSub => \&upgradeArtsData,
