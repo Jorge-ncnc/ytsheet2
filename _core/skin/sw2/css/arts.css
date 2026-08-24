@@ -51,8 +51,8 @@ article,
   html:not(.night) #arts article .color-set {
     --arts-name-bg-color: hsl(
       var(--box-head-bg-color-h, 0),
-      calc( var(--box-head-bg-color-s, 0%) * 0.5 ),
-      27%
+      calc( var(--box-head-bg-color-s, 0%) * 0.6 ),
+      30%
     );
     --arts-name-color: #fff;
     --arts-head-bg-color: hsl(
@@ -62,8 +62,8 @@ article,
     );
     --arts-section-bg-color: hsl(
       var(--box-head-bg-color-h, 0),
-      calc( var(--box-head-bg-color-s, 0%) * 0.15 ),
-      27%
+      calc( var(--box-head-bg-color-s, 0%) * 0.6 ),
+      30%
     );
     --arts-section-color: #fff;
     --arts-description-head-bg-color: hsl(
