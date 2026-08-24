@@ -50,8 +50,8 @@ article, .color-set {
   html:not(.night) #monster article .color-set {
     --monster-level-bg-color: hsl(
       var(--box-head-bg-color-h, 0),
-      calc( var(--box-head-bg-color-s, 0%) * 0.5 ),
-      27%
+      calc( var(--box-head-bg-color-s, 0%) * 0.6 ),
+      30%
     );
     --monster-level-color: #fff;
     --monster-head-bg-color: hsl(
