@@ -417,8 +417,8 @@ dl.edit-table:last-child > dt:last-of-type ~ dd {
   font-size: 130%;
   font-family: var(--base-font-family-min);
   line-height: 1;
-  -webkit-text-stroke: .29em #000;
-  text-stroke: .29em #000;
+  -webkit-text-stroke: .2rem #000;
+  text-stroke: .2rem #000;
   paint-order: stroke;
   white-space: nowrap;
   overflow: hidden;
